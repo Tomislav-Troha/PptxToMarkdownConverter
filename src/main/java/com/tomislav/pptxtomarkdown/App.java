@@ -30,7 +30,7 @@ public class App {
                 // Ispis Markdown izlaza na konzolu
                 System.out.println(markdown);
             } catch (IOException e) {
-                System.err.println("Pogreška prilikom čitanja pptx datoteke: " + e.getMessage());
+                System.err.println("Pogreška prilikom čitanja pptx datoteke:  " + e.getMessage());
                 e.printStackTrace();
             }
         }
