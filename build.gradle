@@ -13,6 +13,16 @@ dependencies {
     testImplementation 'org.junit.jupiter:junit-jupiter-api:5.7.0'
     testRuntimeOnly 'org.junit.jupiter:junit-jupiter-engine:5.7.0'
     implementation 'org.apache.poi:poi-ooxml:5.2.0'
+
+    // here starts JavaFX
+    implementation 'org.openjfx:javafx-base:19.0.2.1'
+    implementation 'org.openjfx:javafx-controls:19.0.2.1'
+    implementation 'org.openjfx:javafx-graphics:19.0.2.1'
+    implementation 'org.openjfx:javafx-fxml:19.0.2.1'
+    implementation 'org.openjfx:javafx-web:19.0.2.1'
+
+    implementation 'com.vladsch.flexmark:flexmark-all:0.64.0'
+
 }
 
 test {

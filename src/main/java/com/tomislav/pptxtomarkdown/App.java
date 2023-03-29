@@ -1,37 +1,26 @@
 package com.tomislav.pptxtomarkdown;
+import com.tomislav.pptxtomarkdown.controller.PptxToMarkdownController;
+import com.tomislav.pptxtomarkdown.view.PptxToMarkDownView;
+import javafx.application.Application;
+import javafx.scene.Scene;
+import javafx.stage.Stage;
 
-import com.tomislav.pptxtomarkdown.model.PptxMetadata;
-import com.tomislav.pptxtomarkdown.utils.MarkdownGenerator;
-import com.tomislav.pptxtomarkdown.utils.PptxExtractor;
 
-import java.io.IOException;
+public class App extends Application {
 
-public class App {
+    public static void main(String[] args) {
+        launch(args);
+    }
 
-        public static void main(String[] args) {
-            // Provjerite jesu li navedeni ulazni i izlazni argumenti
-            if (args.length != 1) {
-                System.err.println("Koristi: java -jar <naziv_aplikacije>.jar <pptx_datoteka>");
-                System.exit(1);
-            }
+    @Override
+    public void start(Stage primaryStage) {
+        PptxToMarkDownView view = new PptxToMarkDownView();
+        PptxToMarkdownController controller = new PptxToMarkdownController(view);
 
-            String inputFilePath = args[0];
+        Scene scene = view.createScene();
 
-            PptxExtractor extractor = new PptxExtractor();
-            MarkdownGenerator generator = new MarkdownGenerator();
-
-            try {
-                // Ekstrakcija metapodataka iz pptx datoteke
-                PptxMetadata metadata = extractor.extractMetadata(inputFilePath);
-
-                // Generiranje Markdown iz metapodataka
-                String markdown = generator.generateMarkdown(metadata);
-
-                // Ispis Markdown izlaza na konzolu
-                System.out.println(markdown);
-            } catch (IOException e) {
-                System.err.println("Pogreška prilikom čitanja pptx datoteke:  " + e.getMessage());
-                e.printStackTrace();
-            }
-        }
+        primaryStage.setTitle("Pptx to Markdown");
+        primaryStage.setScene(scene);
+        primaryStage.show();
+    }
 }
