@@ -3,15 +3,15 @@ package com.tomislav.pptxtomarkdown.view;
 import com.tomislav.pptxtomarkdown.utils.MarkdownToHtmlConverter;
 import javafx.geometry.Insets;
 import javafx.scene.Scene;
-import javafx.scene.control.Button;
-import javafx.scene.control.TextArea;
-import javafx.scene.control.TextField;
+import javafx.scene.control.*;
 import javafx.scene.layout.BorderPane;
 import javafx.scene.layout.HBox;
 import javafx.scene.layout.VBox;
 import javafx.scene.web.WebEngine;
 import javafx.scene.web.WebView;
 import javafx.stage.FileChooser;
+
+import java.awt.print.Paper;
 
 public class PptxToMarkDownView {
 
@@ -35,19 +35,27 @@ public class PptxToMarkDownView {
         markdownOutput.setEditable(false);
 
         htmlPreview = new WebView();
+        htmlPreview.setPrefSize(210, 297);
     }
 
     public Scene createScene() {
         HBox fileInputLayout = new HBox(10, chooseFileButton, filePathTextField);
-        VBox mainLayout = new VBox(10, fileInputLayout, markdownOutput, htmlPreview);
-        mainLayout.setPadding(new Insets(10));
+        VBox markdownLayout = new VBox(10, new Label("Markdown izlaz:"), markdownOutput);
+        VBox htmlLayout = new VBox(10, new Label("HTML pregled:"), htmlPreview);
+
+        SplitPane splitPane = new SplitPane(markdownLayout, htmlLayout);
+        splitPane.setDividerPositions(0.5);
 
         BorderPane root = new BorderPane();
-        root.setTop(mainLayout);
+        root.setTop(fileInputLayout);
+        root.setCenter(splitPane);
+
+        Scene scene = new Scene(root);
 
 
-        return new Scene(root, 800, 600);
+        return scene;
     }
+
 
     // Getters za kontroler
 

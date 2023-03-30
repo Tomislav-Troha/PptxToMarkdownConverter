@@ -9,7 +9,7 @@ import javafx.stage.Stage;
 public class App extends Application {
 
     public static void main(String[] args) {
-        launch(args);
+        launch();
     }
 
     @Override
@@ -21,6 +21,7 @@ public class App extends Application {
 
         primaryStage.setTitle("Pptx to Markdown");
         primaryStage.setScene(scene);
+        primaryStage.setMaximized(true);
         primaryStage.show();
     }
 }

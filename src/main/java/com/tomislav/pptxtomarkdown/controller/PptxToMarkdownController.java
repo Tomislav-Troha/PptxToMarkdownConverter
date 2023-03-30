@@ -31,7 +31,7 @@ public class PptxToMarkdownController {
                     view.getMarkdownOutput().setText(markdown);
                     view.updateHtmlPreview(markdown);
                 } catch (IOException e) {
-                    view.getMarkdownOutput().setText("Pogreška prilikom čitanja pptx datoteke: " + e.getMessage());
+                    view.getMarkdownOutput().setText("Pogreška prilikom citanja pptx datoteke: " + e.getMessage());
                 }
             }
         });

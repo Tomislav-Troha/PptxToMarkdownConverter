@@ -1,9 +1,13 @@
 package com.tomislav.pptxtomarkdown.model;
 
+import java.util.List;
+
 public class PptxMetadata {
 
     private String title;
     private String author;
+    private List<String> subtitles;
+    private List<List<String>> slideText;
     private int slideCount;
 
     // Dodajte druge metapodatke koje želite pohraniti
@@ -13,13 +17,38 @@ public class PptxMetadata {
     }
 
     // Konstruktor s argumentima
-    public PptxMetadata(String title, String author, int slideCount) {
+    public PptxMetadata
+    (
+            String title,
+            String author,
+            List<String> subtitles,
+            List<List<String>> slideText,
+            int slideCount
+    )
+    {
         this.title = title;
         this.author = author;
+        this.subtitles = subtitles;
+        this.slideText = slideText;
         this.slideCount = slideCount;
     }
 
-    // Getteri i setteri
+    public List<List<String>> getSlideText() {
+        return slideText;
+    }
+
+    public void setSlideText(List<List<String>> slideText) {
+        this.slideText = slideText;
+    }
+
+    public List<String> getSubtitle() {
+        return subtitles;
+    }
+
+    public void setSubtitle(List<String> subtitles) {
+        this.subtitles = subtitles;
+    }
+
     public String getTitle() {
         return title;
     }
@@ -44,7 +73,7 @@ public class PptxMetadata {
         this.slideCount = slideCount;
     }
 
-    // Dodajte gettere i settere za druge metapodatke
+
 
     // toString metoda za prikaz objekta kao string
     @Override
