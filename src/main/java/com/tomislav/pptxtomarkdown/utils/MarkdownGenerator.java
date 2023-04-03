@@ -21,21 +21,12 @@ public class MarkdownGenerator {
 //        // Add slide count
 //        markdown.append("Broj slajdova: ").append(metadata.getSlideCount()).append("\n\n");
 
-        // Add subtitles
-        if (metadata.getSubtitle() != null && !metadata.getSubtitle().isEmpty()) {
-            markdown.append("## ").append(metadata.getSubtitle()).append("\n\n");
+        // Add subtitles and text
+        if (metadata.getSubtitlesAndText() != null && !metadata.getSubtitlesAndText().isEmpty()) {
+            markdown.append(metadata.getSubtitlesAndText());
         }
-
-        //Add slide text
-        if (metadata.getSlideText() != null && !metadata.getSlideText().isEmpty()) {
-            for (List<String> slideText : metadata.getSlideText()) {
-                for (String text : slideText) {
-                    markdown.append(text).append("\n\n");
-                }
-            }
-        }
-
 
         return markdown.toString();
     }
+
 }

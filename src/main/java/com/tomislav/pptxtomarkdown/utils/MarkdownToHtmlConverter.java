@@ -8,11 +8,12 @@ import com.vladsch.flexmark.util.ast.Document;
 public class MarkdownToHtmlConverter {
 
     public static String convertMarkdownToHtml(String markdown) {
+
         Parser parser = Parser.builder().build();
         HtmlRenderer renderer = HtmlRenderer.builder().build();
 
         Document document = parser.parse(markdown);
-        String html = renderer.render(document).replace("\n", "<br>");
+        String html = renderer.render(document);
 
         // Dodavanje CSS-a za promjenu fonta
         String style = "<style>body { font-family: " + Fonts.GEORGIA + ", sans-serif; }</style>";

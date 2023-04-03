@@ -22,18 +22,22 @@ public class PptxToMarkdownController {
 
         // Dodavanje kontrolera za obradu događaja za chooseFileButton
         view.getChooseFileButton().setOnAction(event -> {
-            File selectedFile = view.getFileChooser().showOpenDialog(new Stage());
-            if (selectedFile != null) {
-                view.getFilePathTextField().setText(selectedFile.getAbsolutePath());
-                try {
-                    PptxMetadata metadata = extractor.extractMetadata(selectedFile.getAbsolutePath());
-                    String markdown = generator.generateMarkdown(metadata);
-                    view.getMarkdownOutput().setText(markdown);
-                    view.updateHtmlPreview(markdown);
-                } catch (IOException e) {
-                    view.getMarkdownOutput().setText("Pogreška prilikom citanja pptx datoteke: " + e.getMessage());
-                }
-            }
+
+
         });
+
+//        File selectedFile = view.getFileChooser().showOpenDialog(new Stage());
+//        if (selectedFile != null) {
+            //view.getFilePathTextField().setText(selectedFile.getAbsolutePath());
+            try {
+                //PptxMetadata metadata = extractor.extractMetadata(selectedFile.getAbsolutePath());
+                PptxMetadata metadata = extractor.extractMetadata("C:\\Users\\tomis\\Desktop\\Kubni.pptx");
+                String markdown = generator.generateMarkdown(metadata);
+                view.getMarkdownOutput().setText(markdown);
+                view.updateHtmlPreview(markdown);
+            } catch (IOException e) {
+                view.getMarkdownOutput().setText("Pogreška prilikom citanja pptx datoteke: " + e.getMessage());
+            }
+//        }
     }
 }
