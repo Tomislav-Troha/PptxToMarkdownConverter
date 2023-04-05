@@ -27,10 +27,10 @@ public class PptxExtractor {
             String title = ppt.getProperties().getCoreProperties().getTitle();
             metadata.setTitle(title +  " " + subject);
 
-            //Extract subtitles and text
-            List<String> subtitleAndText = PptxExtractorHelper.extractTextWithTitles(filePath);
+            //Extract all metadata
+            List<String> subtitleAndText = PptxExtractorHelper.extractMetadatas(filePath);
             String output = PptxExtractorHelper.formatMarkdownOutput(subtitleAndText);
-            metadata.setSubtitlesAndText(output);
+            metadata.setExtractedMetadata(output);
         }
 
         return metadata;

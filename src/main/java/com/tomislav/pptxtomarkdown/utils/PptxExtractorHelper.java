@@ -14,7 +14,7 @@ import java.util.List;
 
 public class PptxExtractorHelper {
 
-    public static List<String> extractTextWithTitles(String filePath) throws IOException {
+    public static List<String> extractMetadatas(String filePath) throws IOException {
         List<String> slideContents = new ArrayList<>();
 
         try (FileInputStream fis = new FileInputStream(filePath);
@@ -23,7 +23,7 @@ public class PptxExtractorHelper {
             List<XSLFSlide> slides = ppt.getSlides();
             for (int i = 1; i < slides.size(); i++) { // Start from index 1 to skip the first slide
                 XSLFSlide slide = slides.get(i);
-                StringBuilder slideText = new StringBuilder();
+                StringBuilder stringSlideContents = new StringBuilder();
 
                 for (XSLFShape shape : slide.getShapes()) {
                     if (shape instanceof XSLFTextShape) {
@@ -31,44 +31,34 @@ public class PptxExtractorHelper {
 
                         // Check if the text shape is a title placeholder
                         if (textShape.isPlaceholder() && textShape.getTextPlaceholder() == TextShape.TextPlaceholder.TITLE) {
-                            slideText.append("## ").append(textShape.getText());
+                            stringSlideContents.append("## ").append(textShape.getText());
                         } else {
                             String text = textShape.getText().replaceAll("\n", "\n\n");
-                            slideText.append("\n\n").append(text);
+                            stringSlideContents.append("\n\n").append(text);
                         }
                     }
-                }
 
-                slideContents.add(slideText.toString().trim());
+                    if (shape instanceof XSLFPictureShape) {
+                        String base64Image = processPictureShape((XSLFPictureShape) shape);
+                        stringSlideContents.append("\n\n").append("![image alt text](data:image/png;base64,").append(base64Image).append(")");
+                    }
+                }
+                slideContents.add(stringSlideContents.toString().trim());
             }
         }
         return slideContents;
     }
 
-    public static List<String> extractImagesAsBase64(String filePath) throws IOException {
-        List<String> base64Images = new ArrayList<>();
 
-        try (FileInputStream fis = new FileInputStream(filePath);
-             XMLSlideShow ppt = new XMLSlideShow(fis)) {
 
-            for (XSLFSlide slide : ppt.getSlides()) {
-                for (XSLFShape shape : slide.getShapes()) {
-                    if (shape instanceof XSLFPictureShape) {
-                        XSLFPictureShape pictureShape = (XSLFPictureShape) shape;
-                        XSLFPictureData pictureData = pictureShape.getPictureData();
+    private static String processPictureShape(XSLFPictureShape pictureShape) throws IOException {
+        XSLFPictureData pictureData = pictureShape.getPictureData();
+        BufferedImage image = ImageIO.read(new ByteArrayInputStream(pictureData.getData()));
+        ByteArrayOutputStream baos = new ByteArrayOutputStream();
+        String imageFormat = pictureData.getContentType().split("/")[1];
+        ImageIO.write(image, imageFormat, baos);
 
-                        BufferedImage image = ImageIO.read(new ByteArrayInputStream(pictureData.getData()));
-                        ByteArrayOutputStream baos = new ByteArrayOutputStream();
-                        ImageIO.write(image, pictureData.getType().extension, baos);
-
-                        String base64Image = Base64.getEncoder().encodeToString(baos.toByteArray());
-                        base64Images.add(base64Image);
-                    }
-                }
-            }
-        }
-
-        return base64Images;
+        return Base64.getEncoder().encodeToString(baos.toByteArray());
     }
 
 

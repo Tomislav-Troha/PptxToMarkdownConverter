@@ -22,8 +22,8 @@ public class MarkdownGenerator {
 //        markdown.append("Broj slajdova: ").append(metadata.getSlideCount()).append("\n\n");
 
         // Add subtitles and text
-        if (metadata.getSubtitlesAndText() != null && !metadata.getSubtitlesAndText().isEmpty()) {
-            markdown.append(metadata.getSubtitlesAndText());
+        if (metadata.getExtractedMetadata() != null && !metadata.getExtractedMetadata().isEmpty()) {
+            markdown.append(metadata.getExtractedMetadata());
         }
 
         return markdown.toString();

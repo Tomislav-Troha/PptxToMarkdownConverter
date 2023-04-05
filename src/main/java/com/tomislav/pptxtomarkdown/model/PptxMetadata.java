@@ -6,11 +6,8 @@ public class PptxMetadata {
 
     private String title;
     private String author;
-    private String subtitlesAndText;
-    private
+    private String extractedMetadata;
     private int slideCount;
-
-    // Dodajte druge metapodatke koje želite pohraniti
 
     // Konstruktor bez argumenata
     public PptxMetadata() {
@@ -21,23 +18,23 @@ public class PptxMetadata {
     (
             String title,
             String author,
-            String subtitlesAndText,
+            String extractedMetadata,
             int slideCount
     )
     {
         this.title = title;
         this.author = author;
-        this.subtitlesAndText = subtitlesAndText;
+        this.extractedMetadata = extractedMetadata;
         this.slideCount = slideCount;
     }
 
 
-    public String getSubtitlesAndText() {
-        return subtitlesAndText;
+    public String getExtractedMetadata() {
+        return extractedMetadata;
     }
 
-    public void setSubtitlesAndText(String subtitlesAndText) {
-        this.subtitlesAndText = subtitlesAndText;
+    public void setExtractedMetadata(String extractedMetadata) {
+        this.extractedMetadata = extractedMetadata;
     }
 
 

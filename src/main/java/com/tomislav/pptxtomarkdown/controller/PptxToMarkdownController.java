@@ -31,7 +31,7 @@ public class PptxToMarkdownController {
             //view.getFilePathTextField().setText(selectedFile.getAbsolutePath());
             try {
                 //PptxMetadata metadata = extractor.extractMetadata(selectedFile.getAbsolutePath());
-                PptxMetadata metadata = extractor.extractMetadata("C:\\Users\\tomis\\Desktop\\Kubni.pptx");
+                PptxMetadata metadata = extractor.extractMetadata("C:\\Users\\tomis\\Desktop\\Testna_prezka.pptx");
                 String markdown = generator.generateMarkdown(metadata);
                 view.getMarkdownOutput().setText(markdown);
                 view.updateHtmlPreview(markdown);
