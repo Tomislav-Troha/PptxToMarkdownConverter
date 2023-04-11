@@ -22,10 +22,9 @@ public class PptxExtractor {
             String author = ppt.getProperties().getCoreProperties().getCreator();
             metadata.setAuthor(author);
 
-            String subject = ppt.getProperties().getCoreProperties().getContentStatus();
             // Extract title
             String title = ppt.getProperties().getCoreProperties().getTitle();
-            metadata.setTitle(title +  " " + subject);
+            metadata.setTitle(title);
 
             //Extract all metadata
             List<String> subtitleAndText = PptxExtractorHelper.extractMetadatas(filePath);

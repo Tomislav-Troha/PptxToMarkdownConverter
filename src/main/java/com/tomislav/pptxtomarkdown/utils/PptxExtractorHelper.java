@@ -1,9 +1,11 @@
 package com.tomislav.pptxtomarkdown.utils;
 
+import com.tomislav.pptxtomarkdown.css.LatexPattern;
 import org.apache.commons.io.output.ByteArrayOutputStream;
 import org.apache.poi.sl.usermodel.TextShape;
 import org.apache.poi.xslf.usermodel.*;
 import javax.imageio.ImageIO;
+import java.awt.*;
 import java.awt.image.BufferedImage;
 import java.io.ByteArrayInputStream;
 import java.io.FileInputStream;
@@ -33,13 +35,14 @@ public class PptxExtractorHelper {
                         if (textShape.isPlaceholder() && textShape.getTextPlaceholder() == TextShape.TextPlaceholder.TITLE) {
                             stringSlideContents.append("## ").append(textShape.getText());
                         } else {
-                            String text = textShape.getText().replaceAll("\n", "\n\n");
+                            String text = textShape.getText().replaceAll("(?m)^", "- ").replaceAll("\n", "\n\n");
                             stringSlideContents.append("\n\n").append(text);
                         }
                     }
 
+                    //extract images from pptx
                     if (shape instanceof XSLFPictureShape) {
-                        String base64Image = processPictureShape((XSLFPictureShape) shape);
+                        String base64Image = processPictureShape((XSLFPictureShape) shape, 350, 300);
                         stringSlideContents.append("\n\n").append("![image alt text](data:image/png;base64,").append(base64Image).append(")");
                     }
                 }
@@ -50,16 +53,27 @@ public class PptxExtractorHelper {
     }
 
 
-
-    private static String processPictureShape(XSLFPictureShape pictureShape) throws IOException {
+    //helper method for extract images from pptx
+    private static String processPictureShape(XSLFPictureShape pictureShape, int targetWidth, int targetHeight) throws IOException {
         XSLFPictureData pictureData = pictureShape.getPictureData();
-        BufferedImage image = ImageIO.read(new ByteArrayInputStream(pictureData.getData()));
+        BufferedImage originalImage = ImageIO.read(new ByteArrayInputStream(pictureData.getData()));
+        BufferedImage resizedImage = resizeImage(originalImage, targetWidth, targetHeight);
+
         ByteArrayOutputStream baos = new ByteArrayOutputStream();
         String imageFormat = pictureData.getContentType().split("/")[1];
-        ImageIO.write(image, imageFormat, baos);
+        ImageIO.write(resizedImage, imageFormat, baos);
 
         return Base64.getEncoder().encodeToString(baos.toByteArray());
     }
+
+    private static BufferedImage resizeImage(BufferedImage originalImage, int targetWidth, int targetHeight) {
+        BufferedImage resizedImage = new BufferedImage(targetWidth, targetHeight, originalImage.getType());
+        Graphics2D g = resizedImage.createGraphics();
+        g.drawImage(originalImage, 0, 0, targetWidth, targetHeight, null);
+        g.dispose();
+        return resizedImage;
+    }
+
 
 
     public static List<List<List<String>>> extractTables(String filePath) throws IOException {

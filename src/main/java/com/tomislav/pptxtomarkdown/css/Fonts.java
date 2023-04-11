@@ -12,7 +12,8 @@ public enum Fonts {
     TAHOMA("Tahoma"),
     TIMES_NEW_ROMAN("Times New Roman"),
     TREBUCHET_MS("Trebuchet MS"),
-    VERDANA("Verdana");
+    VERDANA("Verdana"),
+    COMICSANS("Comic Sans MS");
 
     private String fontName;
 

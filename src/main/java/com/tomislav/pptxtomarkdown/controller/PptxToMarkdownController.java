@@ -26,12 +26,12 @@ public class PptxToMarkdownController {
 
         });
 
-//        File selectedFile = view.getFileChooser().showOpenDialog(new Stage());
+       // File selectedFile = view.getFileChooser().showOpenDialog(new Stage());
 //        if (selectedFile != null) {
-            //view.getFilePathTextField().setText(selectedFile.getAbsolutePath());
+           // view.getFilePathTextField().setText(selectedFile.getName());
             try {
                 //PptxMetadata metadata = extractor.extractMetadata(selectedFile.getAbsolutePath());
-                PptxMetadata metadata = extractor.extractMetadata("C:\\Users\\tomis\\Desktop\\Testna_prezka.pptx");
+                PptxMetadata metadata = extractor.extractMetadata("C:\\Users\\tomis\\Desktop\\Upravljanje-znanjem-u-obrazovanju.pptx");
                 String markdown = generator.generateMarkdown(metadata);
                 view.getMarkdownOutput().setText(markdown);
                 view.updateHtmlPreview(markdown);
