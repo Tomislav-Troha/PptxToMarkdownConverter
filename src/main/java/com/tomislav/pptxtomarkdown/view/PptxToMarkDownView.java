@@ -1,7 +1,6 @@
 package com.tomislav.pptxtomarkdown.view;
 
 import com.tomislav.pptxtomarkdown.css.Fonts;
-import com.tomislav.pptxtomarkdown.css.LatexPattern;
 import com.tomislav.pptxtomarkdown.utils.ExportHelper;
 import com.tomislav.pptxtomarkdown.utils.MainViewHelper;
 import com.tomislav.pptxtomarkdown.utils.MarkdownToHtmlConverter;
@@ -11,13 +10,6 @@ import javafx.scene.layout.*;
 import javafx.scene.web.WebEngine;
 import javafx.scene.web.WebView;
 import javafx.stage.FileChooser;
-import org.w3c.dom.Document;
-import org.w3c.dom.ls.DOMImplementationLS;
-import org.w3c.dom.ls.LSSerializer;
-
-import java.io.File;
-
-import static com.tomislav.pptxtomarkdown.utils.ExportHelper.exportHtmlToPdf;
 
 public class PptxToMarkDownView {
 
@@ -30,7 +22,10 @@ public class PptxToMarkDownView {
     private final Button exportHtmlButton;
     private final Button exportMarkdownButton;
 
+    MarkdownToHtmlConverter htmlConverter = new MarkdownToHtmlConverter();
+
     public PptxToMarkDownView() {
+
         fileChooser = new FileChooser();
         fileChooser.getExtensionFilters().add(new FileChooser.ExtensionFilter("PowerPoint Files", "*.pptx"));
 
@@ -69,21 +64,9 @@ public class PptxToMarkDownView {
         htmlPreview = new WebView();
         htmlPreview.setPrefSize(794, 1123);
 
-        //export html preview to pdf or word
+        //export html preview to pdf
         exportHtmlButton = MainViewHelper.createExportButton("Izvezi", "Izvezi HTML u PDF", "Izvezi HTML u Word", event -> {
-            try {
-                String serializedDocument = (String) htmlPreview.getEngine().executeScript("document.documentElement.outerHTML");
-                String escapedDocument = ExportHelper.escapeHtml(serializedDocument);
-                FileChooser fileChooser = new FileChooser();
-                fileChooser.setTitle("Save PDF");
-                fileChooser.getExtensionFilters().add(new FileChooser.ExtensionFilter("PDF Files", "*.pdf"));
-                File outputFile = fileChooser.showSaveDialog(htmlPreview.getScene().getWindow());
-                if (outputFile != null) {
-                    ExportHelper.exportHtmlToPdf(escapedDocument, outputFile.getAbsolutePath());
-                }
-            } catch (Exception e) {
-                e.printStackTrace();
-            }
+            ExportHelper.html_to_pdf_serializeDocument(htmlPreview);
         });
 
     }
@@ -107,7 +90,9 @@ public class PptxToMarkDownView {
     //function for updating html preview
     public void updateHtmlPreview(String markdown, String... fontName) {
         WebEngine webEngine = htmlPreview.getEngine();
-        String html = MarkdownToHtmlConverter.convertMarkdownToHtml(markdown, fontName.length >= 1 ? fontName[0]: Fonts.ARIAL.getFontName());
+        String cssFileUrl = getClass().getResource("/markdown-preview.css").toExternalForm();
+        webEngine.setUserStyleSheetLocation(cssFileUrl);
+        String html = htmlConverter.convertMarkdownToHtml(markdown, fontName.length >= 1 ? fontName[0]: Fonts.ARIAL.getFontName());
         webEngine.loadContent(html);
     }
 

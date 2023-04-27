@@ -5,23 +5,47 @@ import com.vladsch.flexmark.html.HtmlRenderer;
 import com.vladsch.flexmark.parser.Parser;
 import com.vladsch.flexmark.util.ast.Document;
 
+import java.io.BufferedReader;
+import java.io.IOException;
+import java.io.InputStream;
+import java.io.InputStreamReader;
+
 public class MarkdownToHtmlConverter {
 
-    public static String convertMarkdownToHtml(String markdown, String... fontName) {
+    public String convertMarkdownToHtml(String markdown, String... fontName) {
         Parser parser = Parser.builder().build();
         HtmlRenderer renderer = HtmlRenderer.builder().build();
 
         Document document = parser.parse(markdown);
         String html = renderer.render(document);
 
-        // Add MathJax script to the HTML header
-        String mathJaxScript = "<script type=\"text/javascript\" async src=\"https://cdnjs.cloudflare.com/ajax/libs/mathjax/3.2.0/es5/tex-mml-chtml.js\"></script>";
 
-        // Add CSS for font change
-        String style = "<style>body { font-family: " + fontName[0]  + ", sans-serif; text-align: left; }</style>";
-        String htmlWithFont = "<!DOCTYPE html><html><head>" + style + mathJaxScript + "</head><body>" + html + "</body></html>";
+        String finalHtml = null;
+        try {
+            finalHtml = getHtmlTemplate(fontName[0], html);
+        } catch (IOException e) {
+            e.printStackTrace();
+        }
 
-        return htmlWithFont;
+        return finalHtml;
     }
+
+    private String getHtmlTemplate(String fontName, String content) throws IOException {
+        InputStream inputStream = getClass().getResourceAsStream("/main-html.html");
+        BufferedReader reader = new BufferedReader(new InputStreamReader(inputStream));
+        StringBuilder htmlTemplate = new StringBuilder();
+        String line;
+
+        while ((line = reader.readLine()) != null) {
+            htmlTemplate.append(line);
+        }
+
+        String html = htmlTemplate.toString();
+        html = html.replace("FONT_NAME", fontName);
+        html = html.replace("CONTENT", content);
+
+        return html;
+    }
+
 
 }

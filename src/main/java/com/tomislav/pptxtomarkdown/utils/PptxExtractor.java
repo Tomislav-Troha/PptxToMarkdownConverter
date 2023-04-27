@@ -27,7 +27,7 @@ public class PptxExtractor {
             metadata.setTitle(title);
 
             //Extract all metadata
-            List<String> subtitleAndText = PptxExtractorHelper.extractMetadatas(filePath);
+            List<String> subtitleAndText = PptxExtractorHelper.extractMetadata(filePath);
             String output = PptxExtractorHelper.formatMarkdownOutput(subtitleAndText);
             metadata.setExtractedMetadata(output);
         }
