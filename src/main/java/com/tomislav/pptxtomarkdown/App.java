@@ -17,7 +17,7 @@ public class App extends Application {
         PptxToMarkDownView view = new PptxToMarkDownView();
         PptxToMarkdownController controller = new PptxToMarkdownController(view);
 
-        Scene scene = view.createScene();
+        Scene scene = view.createScene(view);
 
         primaryStage.setTitle("Pptx to Markdown");
         primaryStage.setScene(scene);

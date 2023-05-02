@@ -1,5 +1,9 @@
-package com.tomislav.pptxtomarkdown.utils;
+package com.tomislav.pptxtomarkdown.helpers;
 
+import com.tomislav.pptxtomarkdown.model.PptxMetadata;
+import com.tomislav.pptxtomarkdown.utils.MarkdownGenerator;
+import com.tomislav.pptxtomarkdown.utils.PptxExtractor;
+import com.tomislav.pptxtomarkdown.view.PptxToMarkDownView;
 import javafx.event.ActionEvent;
 import javafx.event.EventHandler;
 import javafx.scene.Node;
@@ -8,6 +12,10 @@ import javafx.scene.layout.HBox;
 import javafx.scene.layout.Priority;
 import javafx.scene.layout.Region;
 import javafx.scene.layout.VBox;
+import javafx.stage.Stage;
+
+import java.io.File;
+import java.io.IOException;
 
 public class MainViewHelper {
 
@@ -45,5 +53,4 @@ public class MainViewHelper {
         VBox layout = new VBox(10, label, outputArea, exportButtonContainer);
         return layout;
     }
-
 }

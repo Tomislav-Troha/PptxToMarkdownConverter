@@ -21,23 +21,23 @@ public class PptxToMarkdownController {
         this.generator = new MarkdownGenerator();
 
         // Dodavanje kontrolera za obradu događaja za chooseFileButton
-        view.getChooseFileButton().setOnAction(event -> {
+//        view.getChooseFileButton().setOnAction(event -> {
+//
+//            File selectedFile = view.getFileChooser().showOpenDialog(new Stage());
+//            if (selectedFile != null) {
+//                view.getFilePathTextField().setText(selectedFile.getName());
+//                try {
+//                    PptxMetadata metadata = extractor.extractMetadata(selectedFile.getAbsolutePath());
+//                    //PptxMetadata metadata = extractor.extractMetadata("C:\\Users\\tomis\\Desktop\\Upravljanje-znanjem-u-obrazovanju.pptx");
+//                    String markdown = generator.generateMarkdown(metadata);
+//                    view.getMarkdownOutput().setText(markdown);
+//                    view.updateHtmlPreview(markdown);
+//                } catch (IOException e) {
+//                    view.getMarkdownOutput().setText("Pogreška prilikom citanja pptx datoteke: " + e.getMessage());
+//                }
+//            }
+//        });
 
 
-        });
-
-       // File selectedFile = view.getFileChooser().showOpenDialog(new Stage());
-//        if (selectedFile != null) {
-           // view.getFilePathTextField().setText(selectedFile.getName());
-            try {
-                //PptxMetadata metadata = extractor.extractMetadata(selectedFile.getAbsolutePath());
-                PptxMetadata metadata = extractor.extractMetadata("C:\\Users\\tomis\\Desktop\\Upravljanje-znanjem-u-obrazovanju.pptx");
-                String markdown = generator.generateMarkdown(metadata);
-                view.getMarkdownOutput().setText(markdown);
-                view.updateHtmlPreview(markdown);
-            } catch (IOException e) {
-                view.getMarkdownOutput().setText("Pogreška prilikom citanja pptx datoteke: " + e.getMessage());
-            }
-//        }
     }
 }

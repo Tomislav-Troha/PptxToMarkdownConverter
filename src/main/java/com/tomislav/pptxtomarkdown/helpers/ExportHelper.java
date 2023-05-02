@@ -1,4 +1,4 @@
-package com.tomislav.pptxtomarkdown.utils;
+package com.tomislav.pptxtomarkdown.helpers;
 
 import com.openhtmltopdf.pdfboxout.PdfRendererBuilder;
 import javafx.scene.web.WebView;
