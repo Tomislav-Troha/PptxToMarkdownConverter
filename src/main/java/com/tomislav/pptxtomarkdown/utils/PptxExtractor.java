@@ -1,19 +1,22 @@
 package com.tomislav.pptxtomarkdown.utils;
 import com.tomislav.pptxtomarkdown.helpers.PptxExtractorHelper;
 import com.tomislav.pptxtomarkdown.model.PptxMetadata;
+import javafx.scene.control.Alert;
+import javafx.util.Duration;
 import org.apache.poi.hslf.usermodel.HSLFSlideShow;
 import org.apache.poi.sl.usermodel.SlideShow;
 import org.apache.poi.xslf.usermodel.XMLSlideShow;
 import org.apache.poi.xslf.usermodel.XSLFSlideShow;
 
 import java.io.FileInputStream;
+import java.io.FileNotFoundException;
 import java.io.IOException;
 import java.io.InputStream;
 import java.util.List;
 
 public class PptxExtractor {
 
-    public PptxMetadata extractMetadata(String filePath) throws IOException {
+    public PptxMetadata extractMetadata(String filePath) {
         PptxMetadata metadata = new PptxMetadata();
 
         try (InputStream inputStream = new FileInputStream(filePath)) {
@@ -46,13 +49,15 @@ public class PptxExtractor {
                 String title = ppt.getSummaryInformation().getTitle();
                 metadata.setTitle(title);
             } else {
-                throw new IllegalArgumentException("Unsupported file format");
+                throw new Exception("File format not supported.");
             }
 
             // Extract all metadata
             List<String> subtitleAndText = PptxExtractorHelper.extractMetadata(filePath);
             String output = PptxExtractorHelper.formatMarkdownOutput(subtitleAndText);
             metadata.setExtractedMetadata(output);
+        } catch (Exception e) {
+            NotificationManager.showMessageBox("",e + " " + e.getMessage(), Alert.AlertType.ERROR, Duration.seconds(3));
         }
 
         return metadata;

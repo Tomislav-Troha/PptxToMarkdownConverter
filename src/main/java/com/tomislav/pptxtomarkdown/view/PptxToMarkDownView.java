@@ -14,7 +14,7 @@ import javafx.stage.FileChooser;
 
 public class PptxToMarkDownView {
 
-    private final FileChooser fileChooser = new FileChooser();
+
 //    private final MenuButton fontMenuButton;
     private final TextArea markdownOutput;
     private final WebView htmlPreview;
@@ -33,7 +33,7 @@ public class PptxToMarkDownView {
 
         markdownOutput = new TextArea();
         markdownOutput.setPrefSize(794, 1123);
-        markdownOutput.setPromptText("Markdown izlaz");
+        markdownOutput.setPromptText("Markdown view");
         markdownOutput.setEditable(true);
 
         //loop through fonts enum and add menu items
@@ -53,7 +53,7 @@ public class PptxToMarkDownView {
 //        });
 
         //export markdown to pdf or word
-        exportMarkdownButton = MainViewHelper.createExportButton("Izvezi", "Izvezi markdown u PDF", "Izvezi markdown u Word", event -> {});
+        exportMarkdownButton = MainViewHelper.createExportButton("Export", "Export to PDF", "Export to Word", event -> {});
 
         //update html preview when text in markdownOutput changes
         markdownOutput.textProperty().addListener((observable, oldValue, newValue) -> updateHtmlPreview(newValue));
@@ -62,7 +62,7 @@ public class PptxToMarkDownView {
         htmlPreview.setPrefSize(794, 1123);
 
         //export html preview to pdf
-        exportHtmlButton = MainViewHelper.createExportButton("Izvezi", "Izvezi HTML u PDF", "Izvezi HTML u Word", event -> {
+        exportHtmlButton = MainViewHelper.createExportButton("Export", "Export to PDF", "Export to Word", event -> {
             ExportHelper.html_to_pdf_serializeDocument(htmlPreview);
         });
 
@@ -73,8 +73,8 @@ public class PptxToMarkDownView {
         MenuBar menuBar = menuCreatorHelper.createMenuBar(view);
 
         HBox fileInputLayout = new HBox(10);
-        VBox markdownLayout = MainViewHelper.createLayout("Markdown izlaz:", markdownOutput, exportMarkdownButton);
-        VBox htmlLayout = MainViewHelper.createLayout("HTML pregled:", htmlPreview, exportHtmlButton);
+        VBox markdownLayout = MainViewHelper.createLayout("Markdown", markdownOutput, exportMarkdownButton);
+        VBox htmlLayout = MainViewHelper.createLayout("Markdown view", htmlPreview, exportHtmlButton);
 
         SplitPane splitPane = new SplitPane(markdownLayout, htmlLayout);
         splitPane.setDividerPositions(0.5);
@@ -104,9 +104,6 @@ public class PptxToMarkDownView {
         return markdownOutput;
     }
 
-    public FileChooser getFileChooser() {
-        return fileChooser;
-    }
     public ProgressBar getProgressBar() {
         if (progressBar == null) {
             progressBar = new ProgressBar();

@@ -1,13 +1,14 @@
 package com.tomislav.pptxtomarkdown.helpers;
 
+import com.tomislav.pptxtomarkdown.utils.NotificationManager;
+import javafx.scene.control.Alert;
+import javafx.util.Duration;
 import org.apache.commons.io.output.ByteArrayOutputStream;
-import org.apache.poi.hslf.record.TextHeaderAtom;
 import org.apache.poi.hslf.usermodel.*;
 import org.apache.poi.openxml4j.exceptions.InvalidFormatException;
 import org.apache.poi.openxml4j.opc.OPCPackage;
 import org.apache.poi.sl.usermodel.PictureData;
 import org.apache.poi.sl.usermodel.TextShape;
-import org.apache.poi.ss.usermodel.ShapeTypes;
 import org.apache.poi.xslf.usermodel.*;
 import javax.imageio.ImageIO;
 import java.awt.*;
@@ -15,114 +16,27 @@ import java.awt.image.BufferedImage;
 import java.io.ByteArrayInputStream;
 import java.io.FileInputStream;
 import java.io.IOException;
+import java.io.InputStream;
 import java.util.ArrayList;
 import java.util.Base64;
 import java.util.List;
 
 public class PptxExtractorHelper {
 
-    public static List<String> extractMetadata(String filePath) throws IOException {
-        List<String> slideContents = new ArrayList<>();
-
-        if(filePath.endsWith(".pptx")){
-            try (XMLSlideShow pptx = new XMLSlideShow(OPCPackage.open(filePath))) {
-                try (FileInputStream fis = new FileInputStream(filePath);
-                     XMLSlideShow ppt = new XMLSlideShow(fis)) {
-
-                    List<XSLFSlide> slides = ppt.getSlides();
-                    for (int i = 1; i < slides.size(); i++) { // Start from index 1 to skip the first slide
-                        XSLFSlide slide = slides.get(i);
-                        StringBuilder stringSlideContents = new StringBuilder();
-
-                        for (XSLFShape shape : slide.getShapes()) {
-                            if (shape instanceof XSLFTextShape) {
-                                XSLFTextShape textShape = (XSLFTextShape) shape;
-
-                                // Check if the text shape is a title placeholder
-                                if (textShape.isPlaceholder() && textShape.getTextPlaceholder() == TextShape.TextPlaceholder.TITLE) {
-                                    stringSlideContents.append("## ").append(textShape.getText());
-                                } else {
-                                    String text = textShape.getText().replaceAll("(?m)^", "- ").replaceAll("\n", "\n\n");
-                                    stringSlideContents.append("\n\n").append(text);
-                                }
-                            }
-
-                            //extract images from pptx
-                            if (shape instanceof XSLFPictureShape) {
-                                //process image
-                                String base64Image = processPictureXSLFShape((XSLFPictureShape) shape, 350, 300);
-
-                                //get image type
-                                String pictureData = ((XSLFPictureShape) shape).getPictureData().getContentType();
-                                String cssTag = "<img src=\"data:%s;base64,%s\" alt=\"image\" style=\"display: block; margin: auto;\">";
-                                String imageTag = String.format(cssTag, pictureData, base64Image);
-
-                                stringSlideContents.append("\n\n").append(imageTag);
-                            }
-                        }
-                        slideContents.add(stringSlideContents.toString().trim());
-                    }
-                }
-            } catch (InvalidFormatException e) {
-                e.printStackTrace();
+    public static List<String> extractMetadata(String filePath) {
+        try{
+            List<String> slideContents = new ArrayList<>();
+            if (filePath.endsWith(".pptx")) {
+                slideContents = extractMetadataPptx(filePath);
+            } else if (filePath.endsWith(".ppt")) {
+                slideContents = extractMetadataPpt(filePath);
             }
+            return  slideContents;
         }
-
-            else if (filePath.endsWith(".ppt")) {
-                try (FileInputStream fis = new FileInputStream(filePath); HSLFSlideShow ppt = new HSLFSlideShow(fis)) {
-                    List<HSLFSlide> slides = ppt.getSlides();
-                    for (int i = 1; i < slides.size(); i++) { // Start from index 1 to skip the first slide
-                        HSLFSlide slide = slides.get(i);
-                        StringBuilder stringSlideContents = new StringBuilder();
-
-                        for (HSLFShape shape : slide.getShapes()) {
-                            if (shape instanceof HSLFTextShape) {
-                                HSLFTextShape textShape = (HSLFTextShape) shape;
-
-                                // Check if the text shape is a title placeholder
-                                boolean isTitle = false;
-//TODO fix this
-//                                if (textShape.getShapeType() == ShapeTypes.TextBox && textShape.getAnchor().getY() == 0) {
-//                                        isTitle = true;
-//                                        break;
-//                                    }
-
-                                if (isTitle) {
-                                    stringSlideContents.append("## ").append(textShape.getText());
-                                } else {
-                                    List<HSLFTextParagraph> textParagraphs = textShape.getTextParagraphs();
-                                    for (HSLFTextParagraph textParagraph : textParagraphs) {
-                                        for (HSLFTextRun textRun : textParagraph) {
-                                            String text = textRun.getRawText().replaceAll("(?m)^", "- ").replaceAll("\n", "\n\n");
-                                            stringSlideContents.append("\n\n").append(text);
-                                        }
-                                    }
-                                }
-                            }
-
-                            // Extract images from PPT files
-                            if (shape instanceof HSLFPictureShape) {
-                                HSLFPictureShape pictureShape = (HSLFPictureShape) shape;
-                                PictureData pictureData = pictureShape.getPictureData();
-                                String base64Image = processPictureHSLFShape((HSLFPictureShape) shape, 350, 300);
-
-                                String contentType = pictureData.getContentType();
-                                String cssTag = "<img src=\"data:%s;base64,%s\" alt=\"image\" style=\"display: block; margin: auto;\">";
-                                String imageTag = String.format(cssTag, contentType, base64Image);
-
-                                stringSlideContents.append("\n\n").append(imageTag);
-                            }
-                        }
-                        slideContents.add(stringSlideContents.toString().trim());
-                    }
-                }
-            }
-        else {
-            throw new IllegalArgumentException("Unsupported file format");
+        catch (IOException e){
+            NotificationManager.showMessageBox("Error", e + " " + e.getMessage(), Alert.AlertType.ERROR, Duration.seconds(2));
+            return null;
         }
-
-
-        return slideContents;
     }
 
 
@@ -139,6 +53,7 @@ public class PptxExtractorHelper {
         return Base64.getEncoder().encodeToString(baos.toByteArray());
     }
 
+    //helper method for extract images from ppt
     private static String processPictureHSLFShape(HSLFPictureShape pictureShape, int targetWidth, int targetHeight) throws IOException {
         HSLFPictureData pictureData = pictureShape.getPictureData();
         BufferedImage originalImage = ImageIO.read(new ByteArrayInputStream(pictureData.getData()));
@@ -172,8 +87,6 @@ public class PptxExtractorHelper {
     }
 
 
-
-
     public static List<List<List<String>>> extractTables(String filePath) throws IOException {
         List<List<List<String>>> tables = new ArrayList<>();
 
@@ -203,6 +116,93 @@ public class PptxExtractorHelper {
 
         return tables;
     }
+
+    private static List<String> extractMetadataPptx(String filePath) throws IOException {
+        List<String> slideContents = new ArrayList<>();
+
+        try (XMLSlideShow ppt = new XMLSlideShow(OPCPackage.open(filePath))) {
+            List<XSLFSlide> slides = ppt.getSlides();
+            for (int i = 1; i < slides.size(); i++) { // Start from index 1 to skip the first slide
+                XSLFSlide slide = slides.get(i);
+                StringBuilder stringSlideContents = new StringBuilder();
+
+                for (XSLFShape shape : slide.getShapes()) {
+                    if (shape instanceof XSLFTextShape) {
+                        XSLFTextShape textShape = (XSLFTextShape) shape;
+
+                        // Check if the text shape is a title placeholder
+                        if (textShape.isPlaceholder() && textShape.getTextPlaceholder() == TextShape.TextPlaceholder.TITLE) {
+                            stringSlideContents.append("## ").append(textShape.getText());
+                        } else {
+                            String text = textShape.getText().replaceAll("(?m)^", "- ").replaceAll("\n", "\n\n");
+                            stringSlideContents.append("\n\n").append(text);
+                        }
+                    }
+
+                    //extract images from pptx
+                    if (shape instanceof XSLFPictureShape) {
+                        //process image
+                        String base64Image = processPictureXSLFShape((XSLFPictureShape) shape, 350, 300);
+
+                        //get image type
+                        String pictureData = ((XSLFPictureShape) shape).getPictureData().getContentType();
+                        String cssTag = "<img src=\"data:%s;base64,%s\" alt=\"image\" style=\"display: block; margin: auto;\">";
+                        String imageTag = String.format(cssTag, pictureData, base64Image);
+
+                        stringSlideContents.append("\n\n").append(imageTag);
+                    }
+                }
+                slideContents.add(stringSlideContents.toString().trim());
+            }
+        } catch (InvalidFormatException e) {
+            NotificationManager.showMessageBox("", e + " " + e.getMessage(), Alert.AlertType.ERROR, Duration.seconds(3));
+        }
+
+        return slideContents;
+    }
+
+    private static List<String> extractMetadataPpt(String filePath) throws IOException {
+        List<String> slideContents = new ArrayList<>();
+
+        try (InputStream inputStream = new FileInputStream(filePath);
+             HSLFSlideShow ppt = new HSLFSlideShow(inputStream)) {
+
+            List<HSLFSlide> slides = ppt.getSlides();
+            for (int i = 1; i < slides.size(); i++) { // Start from index 1 to skip the first slide
+                HSLFSlide slide = slides.get(i);
+                StringBuilder stringSlideContents = new StringBuilder();
+
+                for (HSLFShape shape : slide.getShapes()) {
+                    if (shape instanceof HSLFTextShape) {
+                        HSLFTextShape textShape = (HSLFTextShape) shape;
+
+                        // Check if the text shape is a title placeholder
+                        if (textShape.isPlaceholder() && textShape.getTextPlaceholder() == TextShape.TextPlaceholder.TITLE) {
+                            stringSlideContents.append("## ").append(textShape.getText());
+                        } else {
+                            String text = textShape.getText().replaceAll("(?m)^", "- ").replaceAll("\n", "\n\n");
+                            stringSlideContents.append("\n\n").append(text);
+                        }
+                    }
+
+                    // Extract images from PPT files
+                    if (shape instanceof HSLFPictureShape) {
+                        HSLFPictureShape pictureShape = (HSLFPictureShape) shape;
+                        PictureData pictureData = pictureShape.getPictureData();
+                        String base64Image = processPictureHSLFShape((HSLFPictureShape) shape, 350, 300);
+
+                        String contentType = pictureData.getContentType();
+                        String cssTag = "<img src=\"data:%s;base64,%s\" alt=\"image\" style=\"display: block; margin: auto;\">";
+                        String imageTag = String.format(cssTag, contentType, base64Image);
+
+                        stringSlideContents.append("\n\n").append(imageTag);
+                    }
+                }
+                slideContents.add(stringSlideContents.toString().trim());
+            }
+        }
+    return slideContents;
+}
 
 
 
