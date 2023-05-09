@@ -19,38 +19,9 @@ import java.io.IOException;
 
 public class MainViewHelper {
 
-    public static Button createExportButton(String buttonText, String exportPdfText, String exportWordText, EventHandler<ActionEvent> pdfAction) {
-        Button exportButton = new Button(buttonText);
-        MenuItem exportToPdf = new MenuItem(exportPdfText);
-        MenuItem exportToWord = new MenuItem(exportWordText);
-
-        // Set the action event handlers for the menu items
-        exportToPdf.setOnAction(pdfAction);
-//        exportToWord.setOnAction(wordAction);
-
-        ContextMenu exportMenu = new ContextMenu();
-        exportMenu.getItems().addAll(exportToPdf, exportToWord);
-
-        exportButton.setOnMouseClicked(event -> {
-            exportMenu.show(exportButton, event.getScreenX(), event.getScreenY());
-        });
-
-        return exportButton;
-    }
-
-
-    private static HBox createExportButtonContainer(Button exportButton) {
-        Region spacer = new Region();
-        HBox.setHgrow(spacer, Priority.ALWAYS);
-        HBox exportButtonContainer = new HBox();
-        exportButtonContainer.getChildren().addAll(spacer, exportButton);
-        return exportButtonContainer;
-    }
-
-    public static VBox createLayout(String labelText, Node outputArea, Button exportButton) {
+    public static VBox createLayout(String labelText, Node outputArea) {
         Label label = new Label(labelText);
-        HBox exportButtonContainer = createExportButtonContainer(exportButton);
-        VBox layout = new VBox(10, label, outputArea, exportButtonContainer);
+        VBox layout = new VBox(10, label, outputArea);
         return layout;
     }
 }

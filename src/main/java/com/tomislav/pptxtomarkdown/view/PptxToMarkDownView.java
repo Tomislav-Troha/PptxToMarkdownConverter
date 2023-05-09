@@ -3,14 +3,29 @@ package com.tomislav.pptxtomarkdown.view;
 import com.tomislav.pptxtomarkdown.css.Fonts;
 import com.tomislav.pptxtomarkdown.helpers.ExportHelper;
 import com.tomislav.pptxtomarkdown.helpers.MainViewHelper;
+import com.tomislav.pptxtomarkdown.helpers.MarkdownEditorHelper;
 import com.tomislav.pptxtomarkdown.helpers.MenuCreatorHelper;
 import com.tomislav.pptxtomarkdown.utils.MarkdownToHtmlConverter;
+import com.tomislav.pptxtomarkdown.utils.NotificationManager;
+import javafx.beans.binding.Bindings;
+import javafx.beans.property.BooleanProperty;
+import javafx.beans.property.SimpleBooleanProperty;
 import javafx.scene.Scene;
 import javafx.scene.control.*;
+import javafx.scene.input.KeyCode;
 import javafx.scene.layout.*;
+import javafx.scene.text.Text;
 import javafx.scene.web.WebEngine;
 import javafx.scene.web.WebView;
 import javafx.stage.FileChooser;
+import javafx.stage.Stage;
+import javafx.util.Duration;
+import org.apache.poi.poifs.filesystem.FileMagic;
+
+import java.io.File;
+import java.io.IOException;
+import java.nio.file.Files;
+import java.util.Map;
 
 public class PptxToMarkDownView {
 
@@ -18,10 +33,11 @@ public class PptxToMarkDownView {
 //    private final MenuButton fontMenuButton;
     private final TextArea markdownOutput;
     private final WebView htmlPreview;
-    private final Button exportHtmlButton;
-    private final Button exportMarkdownButton;
     private ProgressBar progressBar;
+    BooleanProperty modified = new SimpleBooleanProperty(false);
 
+    File saveLocation = null;
+    Text markdownText = new Text("Markdown view");
     MarkdownToHtmlConverter htmlConverter = new MarkdownToHtmlConverter();
 
     public PptxToMarkDownView() {
@@ -35,6 +51,13 @@ public class PptxToMarkDownView {
         markdownOutput.setPrefSize(794, 1123);
         markdownOutput.setPromptText("Markdown view");
         markdownOutput.setEditable(true);
+
+        markdownOutput.textProperty().addListener((observable, oldValue, newValue) -> {
+            modified.set(true);
+        });
+
+
+        markdownText.textProperty().bind(Bindings.when(modified).then("Markdown view *").otherwise("Markdown view"));
 
         //loop through fonts enum and add menu items
 //        fontMenuButton = new MenuButton("Odaberi font");
@@ -52,20 +75,11 @@ public class PptxToMarkDownView {
 //            });
 //        });
 
-        //export markdown to pdf or word
-        exportMarkdownButton = MainViewHelper.createExportButton("Export", "Export to PDF", "Export to Word", event -> {});
-
         //update html preview when text in markdownOutput changes
         markdownOutput.textProperty().addListener((observable, oldValue, newValue) -> updateHtmlPreview(newValue));
 
         htmlPreview = new WebView();
         htmlPreview.setPrefSize(794, 1123);
-
-        //export html preview to pdf
-        exportHtmlButton = MainViewHelper.createExportButton("Export", "Export to PDF", "Export to Word", event -> {
-            ExportHelper.html_to_pdf_serializeDocument(htmlPreview);
-        });
-
     }
 
     public Scene createScene(PptxToMarkDownView view) {
@@ -73,8 +87,8 @@ public class PptxToMarkDownView {
         MenuBar menuBar = menuCreatorHelper.createMenuBar(view);
 
         HBox fileInputLayout = new HBox(10);
-        VBox markdownLayout = MainViewHelper.createLayout("Markdown", markdownOutput, exportMarkdownButton);
-        VBox htmlLayout = MainViewHelper.createLayout("Markdown view", htmlPreview, exportHtmlButton);
+        VBox markdownLayout = MainViewHelper.createLayout(markdownText.getText(), markdownOutput);
+        VBox htmlLayout = MainViewHelper.createLayout("Markdown view", htmlPreview);
 
         SplitPane splitPane = new SplitPane(markdownLayout, htmlLayout);
         splitPane.setDividerPositions(0.5);
@@ -85,6 +99,31 @@ public class PptxToMarkDownView {
         root.setTop(topLayout);
         root.setCenter(splitPane);
         root.setBottom(getProgressBar());
+
+        root.setOnKeyPressed(event -> {
+            if(event.isControlDown() && event.getCode() == KeyCode.S){
+                    if(modified.get()){
+                        String markdown = markdownOutput.getText();
+                        if(saveLocation == null){
+                            FileChooser fileChooser = new FileChooser();
+                            fileChooser.setTitle("Save Markdown");
+                            fileChooser.getExtensionFilters().addAll(
+                                    new FileChooser.ExtensionFilter("Markdown", "*.md"),
+                                    new FileChooser.ExtensionFilter("All Files", "*.*"));
+                            saveLocation = fileChooser.showSaveDialog(new Stage());
+                        }
+                        if(saveLocation != null){
+                            try {
+                                Files.writeString(saveLocation.toPath(), markdown);
+
+                                modified.set(false); // reset the modified flag
+                            } catch (IOException e) {
+                                NotificationManager.showMessageBox("Error", "Error saving markdown file " + e.getMessage(), Alert.AlertType.ERROR, new Duration(3));
+                            }
+                        }
+                    }
+            }
+        });
 
         return new Scene(root);
     }
@@ -104,6 +143,10 @@ public class PptxToMarkDownView {
         return markdownOutput;
     }
 
+    public WebView getHtmlPreview() {
+        return htmlPreview;
+    }
+
     public ProgressBar getProgressBar() {
         if (progressBar == null) {
             progressBar = new ProgressBar();
@@ -112,4 +155,5 @@ public class PptxToMarkDownView {
         }
         return progressBar;
     }
+
 }
