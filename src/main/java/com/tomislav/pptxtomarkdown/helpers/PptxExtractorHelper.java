@@ -34,7 +34,7 @@ public class PptxExtractorHelper {
             return  slideContents;
         }
         catch (IOException e){
-            NotificationManager.showMessageBox("Error", e + " " + e.getMessage(), Alert.AlertType.ERROR, Duration.seconds(2));
+            NotificationManager.showMessageBox(e + " " + e.getMessage(), Alert.AlertType.ERROR, Duration.seconds(2));
             return null;
         }
     }
@@ -155,7 +155,7 @@ public class PptxExtractorHelper {
                 slideContents.add(stringSlideContents.toString().trim());
             }
         } catch (InvalidFormatException e) {
-            NotificationManager.showMessageBox("", e + " " + e.getMessage(), Alert.AlertType.ERROR, Duration.seconds(3));
+            NotificationManager.showMessageBox(e + " " + e.getMessage(), Alert.AlertType.ERROR, Duration.seconds(3));
         }
 
         return slideContents;

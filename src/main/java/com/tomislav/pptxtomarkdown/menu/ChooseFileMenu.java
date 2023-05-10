@@ -9,6 +9,7 @@ import com.tomislav.pptxtomarkdown.view.PptxToMarkDownView;
 import javafx.application.Platform;
 import javafx.concurrent.Task;
 import javafx.scene.control.Alert;
+import javafx.scene.control.Menu;
 import javafx.scene.control.MenuItem;
 import javafx.scene.control.ProgressBar;
 import javafx.stage.FileChooser;
@@ -16,14 +17,21 @@ import javafx.stage.Stage;
 import javafx.util.Duration;
 
 import java.io.File;
+import java.io.IOException;
+import java.nio.file.Files;
 
 public class ChooseFileMenu {
 
     public static MenuItem ChooseMenuHandler(PptxToMarkDownView view) {
         final PptxExtractor extractor = new PptxExtractor();
         final MarkdownGenerator generator = new MarkdownGenerator();
-        MenuItem chooseFile_MenuItem = new MenuItem();
 
+        Menu menu = new Menu("Open");
+
+        MenuItem chooseFile_MenuItem = new MenuItem();
+        MenuItem chooseMarkdownFile_MenuItem = new MenuItem();
+
+        // Choose file menu item (pptx)
         try {
             FileChooser fileChooser = new FileChooser();
             fileChooser.getExtensionFilters().add(new FileChooser.ExtensionFilter("PowerPoint Files", "*.pptx"));
@@ -53,27 +61,78 @@ public class ChooseFileMenu {
                             @Override
                             protected void succeeded() {
                                 super.succeeded();
-                                NotificationManager.showMessageBox("Success ", "File upload completed successfully", Alert.AlertType.INFORMATION, Duration.seconds(3));
+                                NotificationManager.showMessageBox("File upload completed successfully", Alert.AlertType.INFORMATION, Duration.seconds(3));
                                 progressBar.setVisible(false);
                             }
 
                             @Override
                             protected void failed() {
                                 super.failed();
-                                NotificationManager.showMessageBox("Error", "Error while uploading file!", Alert.AlertType.ERROR, Duration.seconds(3));
+                                NotificationManager.showMessageBox("Error while uploading file!", Alert.AlertType.ERROR, Duration.seconds(3));
                                 progressBar.setVisible(false);
                             }
                         };
                         new Thread(task).start();
                     }
                 } catch (Exception e) {
-                    NotificationManager.showMessageBox("Error ", e + " " + e.getMessage(), Alert.AlertType.ERROR, Duration.seconds(3));
+                    NotificationManager.showMessageBox(e + " " + e.getMessage(), Alert.AlertType.ERROR, Duration.seconds(3));
                 }
             });
         } catch (Exception e) {
-            NotificationManager.showMessageBox("Error ", e + " " + e.getMessage(), Alert.AlertType.ERROR, Duration.seconds(3));
+            NotificationManager.showMessageBox(e + " " + e.getMessage(), Alert.AlertType.ERROR, Duration.seconds(3));
         }
-        return chooseFile_MenuItem;
+
+        // Choose file menu item (markdown)
+        try {
+            FileChooser fileChooser = new FileChooser();
+            fileChooser.getExtensionFilters().add(new FileChooser.ExtensionFilter("Markdown Files", "*.md"));
+            chooseMarkdownFile_MenuItem = MenuCreatorHelper.createChooseFileMenuItem("Choose markdown file", (v) -> {
+                File selectedFile = fileChooser.showOpenDialog(new Stage());
+                try {
+                    if (selectedFile != null) {
+                        ProgressBar progressBar = view.getProgressBar();
+                        progressBar.setVisible(true);
+
+                        Task<Void> task = new Task<>() {
+                            @Override
+                            protected Void call() throws IOException {
+                                // Read Markdown text from file
+                                String markdown = Files.readString(selectedFile.toPath());
+
+                                Platform.runLater(() -> {
+                                    view.getMarkdownOutput().setText(markdown);
+                                    view.updateHtmlPreview(markdown);
+                                });
+                                return null;
+                            }
+
+                            @Override
+                            protected void succeeded() {
+                                super.succeeded();
+                                NotificationManager.showMessageBox("File upload completed successfully", Alert.AlertType.INFORMATION, Duration.seconds(3));
+                                progressBar.setVisible(false);
+                            }
+
+                            @Override
+                            protected void failed() {
+                                super.failed();
+                                NotificationManager.showMessageBox("Error while uploading file!", Alert.AlertType.ERROR, Duration.seconds(3));
+                                progressBar.setVisible(false);
+                            }
+                        };
+                        new Thread(task).start();
+                    }
+                } catch (Exception e) {
+                    NotificationManager.showMessageBox(e + " " + e.getMessage(), Alert.AlertType.ERROR, Duration.seconds(3));
+                }
+            });
+        } catch (Exception e) {
+            NotificationManager.showMessageBox(e + " " + e.getMessage(), Alert.AlertType.ERROR, Duration.seconds(3));
+        }
+
+        menu.getItems().addAll(chooseFile_MenuItem, chooseMarkdownFile_MenuItem);
+
+        return menu;
     }
 
 }

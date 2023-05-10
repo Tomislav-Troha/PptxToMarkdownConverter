@@ -19,9 +19,7 @@ import java.io.IOException;
 
 public class MainViewHelper {
 
-    public static VBox createLayout(String labelText, Node outputArea) {
-        Label label = new Label(labelText);
-        VBox layout = new VBox(10, label, outputArea);
-        return layout;
+    public static VBox createLayout(Label label, Node outputArea) {
+        return new VBox(10, label, outputArea);
     }
 }

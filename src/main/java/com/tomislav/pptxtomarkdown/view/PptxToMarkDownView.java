@@ -1,63 +1,49 @@
 package com.tomislav.pptxtomarkdown.view;
 
 import com.tomislav.pptxtomarkdown.css.Fonts;
-import com.tomislav.pptxtomarkdown.helpers.ExportHelper;
 import com.tomislav.pptxtomarkdown.helpers.MainViewHelper;
-import com.tomislav.pptxtomarkdown.helpers.MarkdownEditorHelper;
 import com.tomislav.pptxtomarkdown.helpers.MenuCreatorHelper;
 import com.tomislav.pptxtomarkdown.utils.MarkdownToHtmlConverter;
 import com.tomislav.pptxtomarkdown.utils.NotificationManager;
-import javafx.beans.binding.Bindings;
 import javafx.beans.property.BooleanProperty;
 import javafx.beans.property.SimpleBooleanProperty;
 import javafx.scene.Scene;
 import javafx.scene.control.*;
 import javafx.scene.input.KeyCode;
 import javafx.scene.layout.*;
-import javafx.scene.text.Text;
 import javafx.scene.web.WebEngine;
 import javafx.scene.web.WebView;
 import javafx.stage.FileChooser;
 import javafx.stage.Stage;
 import javafx.util.Duration;
-import org.apache.poi.poifs.filesystem.FileMagic;
-
 import java.io.File;
 import java.io.IOException;
 import java.nio.file.Files;
-import java.util.Map;
 
 public class PptxToMarkDownView {
-
 
 //    private final MenuButton fontMenuButton;
     private final TextArea markdownOutput;
     private final WebView htmlPreview;
     private ProgressBar progressBar;
     BooleanProperty modified = new SimpleBooleanProperty(false);
-
+    private final Label markdownLabel;
+    private final Label htmlLabel;
     File saveLocation = null;
-    Text markdownText = new Text("Markdown view");
     MarkdownToHtmlConverter htmlConverter = new MarkdownToHtmlConverter();
 
     public PptxToMarkDownView() {
 
-//        chooseFileButton = new Button("Odaberi pptx datoteku");
-//        filePathTextField = new TextField();
-//        filePathTextField.setEditable(false);
-//        filePathTextField.setPromptText("Odabrana datoteka");
+        markdownLabel = new Label("Markdown");
+        markdownLabel.setStyle("-fx-font-size: 20px;");
+
+        htmlLabel = new Label("Markdown preview");
+        htmlLabel.setStyle("-fx-font-size: 20px;");
 
         markdownOutput = new TextArea();
         markdownOutput.setPrefSize(794, 1123);
         markdownOutput.setPromptText("Markdown view");
         markdownOutput.setEditable(true);
-
-        markdownOutput.textProperty().addListener((observable, oldValue, newValue) -> {
-            modified.set(true);
-        });
-
-
-        markdownText.textProperty().bind(Bindings.when(modified).then("Markdown view *").otherwise("Markdown view"));
 
         //loop through fonts enum and add menu items
 //        fontMenuButton = new MenuButton("Odaberi font");
@@ -83,12 +69,13 @@ public class PptxToMarkDownView {
     }
 
     public Scene createScene(PptxToMarkDownView view) {
+        //create main view
         MenuCreatorHelper menuCreatorHelper = new MenuCreatorHelper();
         MenuBar menuBar = menuCreatorHelper.createMenuBar(view);
 
         HBox fileInputLayout = new HBox(10);
-        VBox markdownLayout = MainViewHelper.createLayout(markdownText.getText(), markdownOutput);
-        VBox htmlLayout = MainViewHelper.createLayout("Markdown view", htmlPreview);
+        VBox markdownLayout = MainViewHelper.createLayout(markdownLabel, markdownOutput);
+        VBox htmlLayout = MainViewHelper.createLayout(htmlLabel, htmlPreview);
 
         SplitPane splitPane = new SplitPane(markdownLayout, htmlLayout);
         splitPane.setDividerPositions(0.5);
@@ -100,6 +87,23 @@ public class PptxToMarkDownView {
         root.setCenter(splitPane);
         root.setBottom(getProgressBar());
 
+        //if the markdownOutput is modified, set the modified flag to true
+        markdownOutput.textProperty().addListener((observable, oldValue, newValue) -> {
+            modified.set(true);
+        });
+
+        //if the markdownOutput is modified, set the markdownLabel text to "Markdown *" to indicate that the file is modified
+        modified.addListener((observable, oldValue, newValue) -> {
+            if (newValue) {
+                markdownLabel.setText("Markdown *");
+                markdownLabel.setStyle("-fx-font-weight: bold; -fx-font-size: 20px;");
+            } else {
+                markdownLabel.setText("Markdown");
+                markdownLabel.setStyle("-fx-font-weight: normal; -fx-font-size: 20px;");
+            }
+        });
+
+        //if the markdown is not saved, show a dialog to save the markdown file
         root.setOnKeyPressed(event -> {
             if(event.isControlDown() && event.getCode() == KeyCode.S){
                     if(modified.get()){
@@ -118,7 +122,7 @@ public class PptxToMarkDownView {
 
                                 modified.set(false); // reset the modified flag
                             } catch (IOException e) {
-                                NotificationManager.showMessageBox("Error", "Error saving markdown file " + e.getMessage(), Alert.AlertType.ERROR, new Duration(3));
+                                NotificationManager.showMessageBox("Error saving markdown file " + e.getMessage(), Alert.AlertType.ERROR, new Duration(3));
                             }
                         }
                     }

@@ -1,26 +1,45 @@
 package com.tomislav.pptxtomarkdown.utils;
 
 
+import com.sun.tools.javac.Main;
+import com.tomislav.pptxtomarkdown.App;
 import javafx.animation.PauseTransition;
 import javafx.animation.SequentialTransition;
 import javafx.animation.TranslateTransition;
+import javafx.beans.value.ChangeListener;
+import javafx.beans.value.ObservableValue;
 import javafx.geometry.Pos;
 import javafx.scene.Scene;
 import javafx.scene.control.Alert;
+import javafx.scene.control.Dialog;
 import javafx.scene.control.Label;
 import javafx.scene.layout.VBox;
-import javafx.stage.Modality;
-import javafx.stage.Screen;
-import javafx.stage.Stage;
-import javafx.stage.StageStyle;
+import javafx.stage.*;
 import javafx.util.Duration;
 
     public class NotificationManager {
 
-        public static void showMessageBox(String title, String message, Alert.AlertType alertType, Duration duration) {
+        public static void showMessageBox(String message, Alert.AlertType alertType, Duration duration) {
+
             Stage stage = new Stage();
             stage.initModality(Modality.NONE);
             stage.initStyle(StageStyle.TRANSPARENT);
+
+            stage.initOwner(App.mainStage);
+
+            Stage mainStage = App.mainStage;
+
+            ChangeListener<Number> yListener = (observable, oldValue, newValue) -> {
+                double newY = mainStage.getY() + mainStage.getHeight() / 2 - stage.getHeight() / 2;
+                stage.setY(newY);
+            };
+            ChangeListener<Number> xListener = (observable, oldValue, newValue) -> {
+                double newX = mainStage.getX() + mainStage.getWidth() / 2 - stage.getWidth() / 2;
+                stage.setX(newX);
+            };
+
+            mainStage.getScene().getWindow().yProperty().addListener(yListener);
+            mainStage.getScene().getWindow().xProperty().addListener(xListener);
 
             Label label = new Label(message);
             label.setWrapText(true); // Wrap the text
@@ -66,11 +85,39 @@ import javafx.util.Duration;
         }
 
         private static double getScreenWidth() {
-            return Screen.getPrimary().getVisualBounds().getWidth();
+            return App.mainStage.getWidth();
         }
 
         private static double getScreenHeight() {
-            return Screen.getPrimary().getVisualBounds().getHeight();
+            return App.mainStage.getHeight();
+        }
+
+        public static void stayInRootStage(Dialog dialog) {
+
+            Window window = App.mainStage.getScene().getWindow();
+            Stage mainStage = App.mainStage;
+
+            ChangeListener<Number> yListener = new ChangeListener<Number>() {
+                @Override
+                public void changed(ObservableValue<? extends Number> observable, Number oldValue, Number newValue) {
+                    double newY = mainStage.getY() + mainStage.getHeight() / 2 - dialog.getHeight() / 2;
+                    dialog.setY(newY);
+
+                }
+            };
+
+            ChangeListener<Number> xListener = new ChangeListener<Number>() {
+                @Override
+                public void changed(ObservableValue<? extends Number> observable, Number oldValue, Number newValue) {
+                    double newX = mainStage.getX() + mainStage.getWidth() / 2 - dialog.getWidth() / 2;
+                    dialog.setX(newX);
+                }
+
+            };
+
+            mainStage.getScene().getWindow().yProperty().addListener(yListener);
+
+            mainStage.getScene().getWindow().xProperty().addListener(xListener);
         }
     }
 

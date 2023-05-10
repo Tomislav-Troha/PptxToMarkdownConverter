@@ -8,12 +8,14 @@ import javafx.stage.Stage;
 
 public class App extends Application {
 
+    public static Stage mainStage;
     public static void main(String[] args) {
         launch();
     }
 
     @Override
     public void start(Stage primaryStage) {
+        mainStage = primaryStage;
         PptxToMarkDownView view = new PptxToMarkDownView();
         PptxToMarkdownController controller = new PptxToMarkdownController(view);
 

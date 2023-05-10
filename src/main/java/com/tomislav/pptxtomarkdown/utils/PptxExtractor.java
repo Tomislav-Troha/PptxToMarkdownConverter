@@ -4,13 +4,9 @@ import com.tomislav.pptxtomarkdown.model.PptxMetadata;
 import javafx.scene.control.Alert;
 import javafx.util.Duration;
 import org.apache.poi.hslf.usermodel.HSLFSlideShow;
-import org.apache.poi.sl.usermodel.SlideShow;
 import org.apache.poi.xslf.usermodel.XMLSlideShow;
-import org.apache.poi.xslf.usermodel.XSLFSlideShow;
 
 import java.io.FileInputStream;
-import java.io.FileNotFoundException;
-import java.io.IOException;
 import java.io.InputStream;
 import java.util.List;
 
@@ -57,7 +53,7 @@ public class PptxExtractor {
             String output = PptxExtractorHelper.formatMarkdownOutput(subtitleAndText);
             metadata.setExtractedMetadata(output);
         } catch (Exception e) {
-            NotificationManager.showMessageBox("",e + " " + e.getMessage(), Alert.AlertType.ERROR, Duration.seconds(3));
+            NotificationManager.showMessageBox(e + " " + e.getMessage(), Alert.AlertType.ERROR, Duration.seconds(3));
         }
 
         return metadata;
