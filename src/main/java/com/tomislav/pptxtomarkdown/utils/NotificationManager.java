@@ -91,33 +91,5 @@ import javafx.util.Duration;
         private static double getScreenHeight() {
             return App.mainStage.getHeight();
         }
-
-        public static void stayInRootStage(Dialog dialog) {
-
-            Window window = App.mainStage.getScene().getWindow();
-            Stage mainStage = App.mainStage;
-
-            ChangeListener<Number> yListener = new ChangeListener<Number>() {
-                @Override
-                public void changed(ObservableValue<? extends Number> observable, Number oldValue, Number newValue) {
-                    double newY = mainStage.getY() + mainStage.getHeight() / 2 - dialog.getHeight() / 2;
-                    dialog.setY(newY);
-
-                }
-            };
-
-            ChangeListener<Number> xListener = new ChangeListener<Number>() {
-                @Override
-                public void changed(ObservableValue<? extends Number> observable, Number oldValue, Number newValue) {
-                    double newX = mainStage.getX() + mainStage.getWidth() / 2 - dialog.getWidth() / 2;
-                    dialog.setX(newX);
-                }
-
-            };
-
-            mainStage.getScene().getWindow().yProperty().addListener(yListener);
-
-            mainStage.getScene().getWindow().xProperty().addListener(xListener);
-        }
     }
 

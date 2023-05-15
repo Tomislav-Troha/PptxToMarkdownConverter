@@ -16,6 +16,8 @@ import javafx.scene.web.WebView;
 import javafx.stage.FileChooser;
 import javafx.stage.Stage;
 import javafx.util.Duration;
+import org.jetbrains.annotations.NotNull;
+
 import java.io.File;
 import java.io.IOException;
 import java.nio.file.Files;
@@ -134,7 +136,7 @@ public class PptxToMarkDownView {
 
 
     //function for updating html preview
-    public void updateHtmlPreview(String markdown, String... fontName) {
+    public void updateHtmlPreview(String markdown, String @NotNull ... fontName) {
         WebEngine webEngine = htmlPreview.getEngine();
         String cssFileUrl = getClass().getResource("/markdown-preview.css").toExternalForm();
         webEngine.setUserStyleSheetLocation(cssFileUrl);
