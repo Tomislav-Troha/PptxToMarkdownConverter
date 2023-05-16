@@ -29,6 +29,8 @@ public class PptxToMarkDownView {
     private final WebView htmlPreview;
     private ProgressBar progressBar;
     BooleanProperty modified = new SimpleBooleanProperty(false);
+    BooleanProperty markdownFileLoaded = new SimpleBooleanProperty(false);
+    BooleanProperty pptxFileLoaded = new SimpleBooleanProperty(false);
     private final Label markdownLabel;
     private final Label htmlLabel;
     File saveLocation = null;
@@ -44,6 +46,7 @@ public class PptxToMarkDownView {
 
         markdownOutput = new TextArea();
         markdownOutput.setPrefSize(794, 1123);
+        markdownOutput.setStyle("-fx-font-size: 18px;");
         markdownOutput.setPromptText("Markdown view");
         markdownOutput.setEditable(true);
 
@@ -91,7 +94,8 @@ public class PptxToMarkDownView {
 
         //if the markdownOutput is modified, set the modified flag to true
         markdownOutput.textProperty().addListener((observable, oldValue, newValue) -> {
-            modified.set(true);
+                    modified.set(true);
+            markdownFileLoaded.set(false);
         });
 
         //if the markdownOutput is modified, set the markdownLabel text to "Markdown *" to indicate that the file is modified
@@ -108,26 +112,37 @@ public class PptxToMarkDownView {
         //if the markdown is not saved, show a dialog to save the markdown file
         root.setOnKeyPressed(event -> {
             if(event.isControlDown() && event.getCode() == KeyCode.S){
-                    if(modified.get()){
-                        String markdown = markdownOutput.getText();
-                        if(saveLocation == null){
-                            FileChooser fileChooser = new FileChooser();
-                            fileChooser.setTitle("Save Markdown");
-                            fileChooser.getExtensionFilters().addAll(
-                                    new FileChooser.ExtensionFilter("Markdown", "*.md"),
-                                    new FileChooser.ExtensionFilter("All Files", "*.*"));
-                            saveLocation = fileChooser.showSaveDialog(new Stage());
-                        }
-                        if(saveLocation != null){
-                            try {
-                                Files.writeString(saveLocation.toPath(), markdown);
+                if(modified.get()){
+                    String markdown = markdownOutput.getText();
+                    if(getSaveLocation() == null && !markdownFileLoaded.get()){
+                        FileChooser fileChooser = new FileChooser();
+                        fileChooser.setTitle("Save Markdown");
+                        fileChooser.getExtensionFilters().addAll(
+                                new FileChooser.ExtensionFilter("Markdown", "*.md"),
+                                new FileChooser.ExtensionFilter("All Files", "*.*"));
+                        saveLocation = fileChooser.showSaveDialog(new Stage());
+                    }
 
-                                modified.set(false); // reset the modified flag
-                            } catch (IOException e) {
-                                NotificationManager.showMessageBox("Error saving markdown file " + e.getMessage(), Alert.AlertType.ERROR, new Duration(3));
-                            }
+                    if(getSaveLocation() == null && !pptxFileLoaded.get()){
+                        FileChooser fileChooser = new FileChooser();
+                        fileChooser.setTitle("Save Markdown");
+                        fileChooser.getExtensionFilters().addAll(
+                                new FileChooser.ExtensionFilter("Markdown", "*.md"),
+                                new FileChooser.ExtensionFilter("All Files", "*.*"));
+                        saveLocation = fileChooser.showSaveDialog(new Stage());
+                    }
+
+                    if(getSaveLocation() != null){
+                        try {
+                            Files.writeString(getSaveLocation().toPath(), markdown);
+
+                            modified.set(false); // reset the modified flag
+                            markdownFileLoaded.set(true); // reset the fileLoaded flag
+                        } catch (IOException e) {
+                            NotificationManager.showMessageBox("Error saving markdown file " + e.getMessage(), Alert.AlertType.ERROR, new Duration(3));
                         }
                     }
+                }
             }
         });
 
@@ -135,7 +150,7 @@ public class PptxToMarkDownView {
     }
 
 
-    //function for updating html preview
+    //properties
     public void updateHtmlPreview(String markdown, String @NotNull ... fontName) {
         WebEngine webEngine = htmlPreview.getEngine();
         String cssFileUrl = getClass().getResource("/markdown-preview.css").toExternalForm();
@@ -160,6 +175,24 @@ public class PptxToMarkDownView {
             progressBar.setVisible(false);
         }
         return progressBar;
+    }
+
+    public BooleanProperty getModified() {
+        return modified;
+    }
+    public BooleanProperty getMarkdownFileLoaded() {
+        return markdownFileLoaded;
+    }
+
+    public BooleanProperty getPptxFileLoaded() {
+        return pptxFileLoaded;
+    }
+
+    public void setSaveLocation(File saveLocation) {
+        this.saveLocation = saveLocation;
+    }
+    public File getSaveLocation() {
+        return saveLocation;
     }
 
 }

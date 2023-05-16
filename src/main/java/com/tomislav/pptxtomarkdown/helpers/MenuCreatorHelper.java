@@ -1,6 +1,7 @@
 package com.tomislav.pptxtomarkdown.helpers;
 
 import com.tomislav.pptxtomarkdown.menu.ChooseFileMenu;
+import com.tomislav.pptxtomarkdown.menu.EditFileMenu;
 import com.tomislav.pptxtomarkdown.menu.ExportMenu;
 import com.tomislav.pptxtomarkdown.menu.ParagraphMenu;
 import com.tomislav.pptxtomarkdown.view.PptxToMarkDownView;
@@ -29,11 +30,11 @@ public class MenuCreatorHelper {
 
         // CustomMenuItem filePathMenuItem = MenuCreatorHelper.createFilePathMenuItem("Odabrana datoteka");
 
-
         Menu fileMenu = new Menu("File");
         fileMenu.getItems().addAll(ChooseFileMenu.ChooseMenuHandler(view), new SeparatorMenuItem(), ExportMenu.createExportMenu(view.getHtmlPreview()));
 
         Menu editMenu = new Menu("Edit");
+        editMenu.getItems().addAll(EditFileMenu.createEditMenu(view));
 
         Menu paragraphMenu = new Menu("Paragraph");
         paragraphMenu.getItems().addAll(ParagraphMenu.createParagraphMenuItem(view));

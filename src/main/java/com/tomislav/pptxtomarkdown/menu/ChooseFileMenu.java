@@ -61,6 +61,7 @@ public class ChooseFileMenu {
                             protected void succeeded() {
                                 super.succeeded();
                                 NotificationManager.showMessageBox("File upload completed successfully", Alert.AlertType.INFORMATION, Duration.seconds(3));
+                                view.getPptxFileLoaded().set(true);
                                 progressBar.setVisible(false);
                             }
 
@@ -109,6 +110,8 @@ public class ChooseFileMenu {
                             protected void succeeded() {
                                 super.succeeded();
                                 NotificationManager.showMessageBox("File upload completed successfully", Alert.AlertType.INFORMATION, Duration.seconds(3));
+                                view.getMarkdownFileLoaded().set(true);
+                                view.setSaveLocation(selectedFile);
                                 progressBar.setVisible(false);
                             }
 

@@ -20,6 +20,7 @@ public class App extends Application {
         PptxToMarkdownController controller = new PptxToMarkdownController(view);
 
         Scene scene = view.createScene(view);
+        scene.getStylesheets().add(getClass().getResource("/styles.css").toExternalForm());
 
         primaryStage.setTitle("Pptx to Markdown");
         primaryStage.setScene(scene);
