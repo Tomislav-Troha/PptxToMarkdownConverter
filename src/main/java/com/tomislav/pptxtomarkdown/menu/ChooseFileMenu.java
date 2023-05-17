@@ -1,5 +1,7 @@
 package com.tomislav.pptxtomarkdown.menu;
 
+import com.sun.javafx.tools.packager.Main;
+import com.tomislav.pptxtomarkdown.helpers.MainViewHelper;
 import com.tomislav.pptxtomarkdown.helpers.MenuCreatorHelper;
 import com.tomislav.pptxtomarkdown.model.PptxMetadata;
 import com.tomislav.pptxtomarkdown.utils.MarkdownGenerator;

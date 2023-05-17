@@ -26,7 +26,7 @@ public class MenuCreatorHelper {
             return filePathMenuItem;
         }
 
-    public MenuBar createMenuBar(PptxToMarkDownView view) {
+    public static MenuBar createMenuBar(PptxToMarkDownView view) {
 
         // CustomMenuItem filePathMenuItem = MenuCreatorHelper.createFilePathMenuItem("Odabrana datoteka");
 

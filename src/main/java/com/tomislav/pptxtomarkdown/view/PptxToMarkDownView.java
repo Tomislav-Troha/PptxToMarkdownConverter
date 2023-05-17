@@ -3,84 +3,59 @@ package com.tomislav.pptxtomarkdown.view;
 import com.tomislav.pptxtomarkdown.css.Fonts;
 import com.tomislav.pptxtomarkdown.helpers.MainViewHelper;
 import com.tomislav.pptxtomarkdown.helpers.MenuCreatorHelper;
-import com.tomislav.pptxtomarkdown.utils.MarkdownToHtmlConverter;
-import com.tomislav.pptxtomarkdown.utils.NotificationManager;
-import javafx.beans.property.BooleanProperty;
+import com.tomislav.pptxtomarkdown.model.PptxToMarkdownViewModel;
 import javafx.beans.property.SimpleBooleanProperty;
 import javafx.scene.Scene;
 import javafx.scene.control.*;
-import javafx.scene.input.KeyCode;
 import javafx.scene.layout.*;
 import javafx.scene.web.WebEngine;
 import javafx.scene.web.WebView;
-import javafx.stage.FileChooser;
-import javafx.stage.Stage;
-import javafx.util.Duration;
-import org.jetbrains.annotations.NotNull;
 
-import java.io.File;
-import java.io.IOException;
-import java.nio.file.Files;
-
-public class PptxToMarkDownView {
-
-//    private final MenuButton fontMenuButton;
-    private final TextArea markdownOutput;
-    private final WebView htmlPreview;
-    private ProgressBar progressBar;
-    BooleanProperty modified = new SimpleBooleanProperty(false);
-    BooleanProperty markdownFileLoaded = new SimpleBooleanProperty(false);
-    BooleanProperty pptxFileLoaded = new SimpleBooleanProperty(false);
-    private final Label markdownLabel;
-    private final Label htmlLabel;
-    File saveLocation = null;
-    MarkdownToHtmlConverter htmlConverter = new MarkdownToHtmlConverter();
+public class PptxToMarkDownView extends PptxToMarkdownViewModel {
 
     public PptxToMarkDownView() {
+        initializeMarkdownLabel();
+        initializeHtmlLabel();
+        initializeMarkdownOutput();
+        initializeHtmlPreview();
+        initializeProperties();
+    }
 
-        markdownLabel = new Label("Markdown");
-        markdownLabel.setStyle("-fx-font-size: 20px;");
-
-        htmlLabel = new Label("Markdown preview");
-        htmlLabel.setStyle("-fx-font-size: 20px;");
-
-        markdownOutput = new TextArea();
-        markdownOutput.setPrefSize(794, 1123);
-        markdownOutput.setStyle("-fx-font-size: 18px;");
-        markdownOutput.setPromptText("Markdown view");
-        markdownOutput.setEditable(true);
-
-        //loop through fonts enum and add menu items
-//        fontMenuButton = new MenuButton("Odaberi font");
-//        for(Fonts font : Fonts.values()){
-//            MenuItem menuItem = new MenuItem(font.getFontName());
-//            fontMenuButton.getItems().add(menuItem);
-//        }
-//
-//        //set action for menu items
-//        fontMenuButton.getItems().forEach(item -> {
-//            item.setOnAction(event -> {
-//                String fontName = item.getText();
-//                fontMenuButton.setText(fontName);
-//                updateHtmlPreview(markdownOutput.getText(), fontName);
-//            });
-//        });
-
-        //update html preview when text in markdownOutput changes
-        markdownOutput.textProperty().addListener((observable, oldValue, newValue) -> updateHtmlPreview(newValue));
-
-        htmlPreview = new WebView();
-        htmlPreview.setPrefSize(794, 1123);
+    private void initializeMarkdownLabel() {
+        setMarkdownLabel(new Label());
+        getMarkdownLabel().setText("Markdown");
+        getMarkdownLabel().setStyle("-fx-font-size: 20px;");
+    }
+    private void initializeHtmlLabel() {
+        setHtmlLabel(new Label());
+        gethtmlLabel().setText("Markdown preview");
+        gethtmlLabel().setStyle("-fx-font-size: 20px;");
+    }
+    private void initializeMarkdownOutput() {
+        setMarkdownOutput(new TextArea());
+        getMarkdownOutput().setPrefSize(794, 1123);
+        getMarkdownOutput().setStyle("-fx-font-size: 18px;");
+        getMarkdownOutput().setPromptText("Markdown view");
+        getMarkdownOutput().setEditable(true);
+        getMarkdownOutput().textProperty().addListener((observable, oldValue, newValue) -> updateHtmlPreview(newValue));
+    }
+    private void initializeHtmlPreview() {
+        setHtmlPreview(new WebView());
+        getHtmlPreview().setPrefSize(794, 1123);
+    }
+    private void initializeProperties() {
+        setModified(new SimpleBooleanProperty(false));
+        setPptxFileLoaded(new SimpleBooleanProperty(false));
+        setMarkdownFileLoaded(new SimpleBooleanProperty(false));
     }
 
     public Scene createScene(PptxToMarkDownView view) {
-        //create main view
-        MenuCreatorHelper menuCreatorHelper = new MenuCreatorHelper();
-        MenuBar menuBar = menuCreatorHelper.createMenuBar(view);
+        //create menu bar
+        MenuBar menuBar = MenuCreatorHelper.createMenuBar(view);
 
         HBox fileInputLayout = new HBox(10);
-        VBox markdownLayout = MainViewHelper.createLayout(markdownLabel, markdownOutput);
-        VBox htmlLayout = MainViewHelper.createLayout(htmlLabel, htmlPreview);
+        VBox markdownLayout = MainViewHelper.createLayout(getMarkdownLabel(), getMarkdownOutput());
+        VBox htmlLayout = MainViewHelper.createLayout(gethtmlLabel(), getHtmlPreview());
 
         SplitPane splitPane = new SplitPane(markdownLayout, htmlLayout);
         splitPane.setDividerPositions(0.5);
@@ -93,106 +68,22 @@ public class PptxToMarkDownView {
         root.setBottom(getProgressBar());
 
         //if the markdownOutput is modified, set the modified flag to true
-        markdownOutput.textProperty().addListener((observable, oldValue, newValue) -> {
-                    modified.set(true);
-            markdownFileLoaded.set(false);
+        getMarkdownOutput().textProperty().addListener((observable, oldValue, newValue) -> {
+                    getModified().set(true);
+            getMarkdownFileLoaded().set(false);
         });
 
-        //if the markdownOutput is modified, set the markdownLabel text to "Markdown *" to indicate that the file is modified
-        modified.addListener((observable, oldValue, newValue) -> {
-            if (newValue) {
-                markdownLabel.setText("Markdown *");
-                markdownLabel.setStyle("-fx-font-weight: bold; -fx-font-size: 20px;");
-            } else {
-                markdownLabel.setText("Markdown");
-                markdownLabel.setStyle("-fx-font-weight: normal; -fx-font-size: 20px;");
-            }
-        });
-
-        //if the markdown is not saved, show a dialog to save the markdown file
-        root.setOnKeyPressed(event -> {
-            if(event.isControlDown() && event.getCode() == KeyCode.S){
-                if(modified.get()){
-                    String markdown = markdownOutput.getText();
-                    if(getSaveLocation() == null && !markdownFileLoaded.get()){
-                        FileChooser fileChooser = new FileChooser();
-                        fileChooser.setTitle("Save Markdown");
-                        fileChooser.getExtensionFilters().addAll(
-                                new FileChooser.ExtensionFilter("Markdown", "*.md"),
-                                new FileChooser.ExtensionFilter("All Files", "*.*"));
-                        saveLocation = fileChooser.showSaveDialog(new Stage());
-                    }
-
-                    if(getSaveLocation() == null && !pptxFileLoaded.get()){
-                        FileChooser fileChooser = new FileChooser();
-                        fileChooser.setTitle("Save Markdown");
-                        fileChooser.getExtensionFilters().addAll(
-                                new FileChooser.ExtensionFilter("Markdown", "*.md"),
-                                new FileChooser.ExtensionFilter("All Files", "*.*"));
-                        saveLocation = fileChooser.showSaveDialog(new Stage());
-                    }
-
-                    if(getSaveLocation() != null){
-                        try {
-                            Files.writeString(getSaveLocation().toPath(), markdown);
-
-                            modified.set(false); // reset the modified flag
-                            markdownFileLoaded.set(true); // reset the fileLoaded flag
-                        } catch (IOException e) {
-                            NotificationManager.showMessageBox("Error saving markdown file " + e.getMessage(), Alert.AlertType.ERROR, new Duration(3));
-                        }
-                    }
-                }
-            }
-        });
+        //create listeners for save and save as buttons
+        MainViewHelper.saveFileListeners(root, view);
 
         return new Scene(root);
     }
 
-
-    //properties
-    public void updateHtmlPreview(String markdown, String @NotNull ... fontName) {
-        WebEngine webEngine = htmlPreview.getEngine();
+    public void updateHtmlPreview(String markdown) {
+        WebEngine webEngine = getHtmlPreview().getEngine();
         String cssFileUrl = getClass().getResource("/markdown-preview.css").toExternalForm();
         webEngine.setUserStyleSheetLocation(cssFileUrl);
-        String html = htmlConverter.convertMarkdownToHtml(markdown, fontName.length >= 1 ? fontName[0]: Fonts.ARIAL.getFontName());
+        String html = htmlConverter.convertMarkdownToHtml(markdown);
         webEngine.loadContent(html);
     }
-
-    // Getters for all view elements
-    public TextArea getMarkdownOutput() {
-        return markdownOutput;
-    }
-
-    public WebView getHtmlPreview() {
-        return htmlPreview;
-    }
-
-    public ProgressBar getProgressBar() {
-        if (progressBar == null) {
-            progressBar = new ProgressBar();
-            progressBar.setMaxWidth(Double.MAX_VALUE);
-            progressBar.setVisible(false);
-        }
-        return progressBar;
-    }
-
-    public BooleanProperty getModified() {
-        return modified;
-    }
-    public BooleanProperty getMarkdownFileLoaded() {
-        return markdownFileLoaded;
-    }
-
-    public BooleanProperty getPptxFileLoaded() {
-        return pptxFileLoaded;
-    }
-
-    public void setSaveLocation(File saveLocation) {
-        this.saveLocation = saveLocation;
-    }
-    public File getSaveLocation() {
-        return saveLocation;
-    }
-
 }

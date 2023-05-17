@@ -12,7 +12,7 @@ import java.io.InputStreamReader;
 
 public class MarkdownToHtmlConverter {
 
-    public String convertMarkdownToHtml(String markdown, String... fontName) {
+    public String convertMarkdownToHtml(String markdown) {
         Parser parser = Parser.builder().build();
         HtmlRenderer renderer = HtmlRenderer.builder().build();
 
@@ -22,7 +22,7 @@ public class MarkdownToHtmlConverter {
 
         String finalHtml = null;
         try {
-            finalHtml = getHtmlTemplate(fontName[0], html);
+            finalHtml = getHtmlTemplate(html);
         } catch (IOException e) {
             e.printStackTrace();
         }
@@ -30,7 +30,7 @@ public class MarkdownToHtmlConverter {
         return finalHtml;
     }
 
-    private String getHtmlTemplate(String fontName, String content) throws IOException {
+    private String getHtmlTemplate(String content) throws IOException {
         InputStream inputStream = getClass().getResourceAsStream("/main-html.html");
         BufferedReader reader = new BufferedReader(new InputStreamReader(inputStream));
         StringBuilder htmlTemplate = new StringBuilder();
@@ -41,7 +41,6 @@ public class MarkdownToHtmlConverter {
         }
 
         String html = htmlTemplate.toString();
-        html = html.replace("FONT_NAME", fontName);
         html = html.replace("CONTENT", content);
 
         return html;
