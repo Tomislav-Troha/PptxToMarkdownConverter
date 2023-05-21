@@ -23,7 +23,7 @@ public class PptxToMarkDownView extends PptxToMarkdownViewModel {
 
     private void initializeMarkdownLabel() {
         setMarkdownLabel(new Label());
-        getMarkdownLabel().setText("Markdown");
+        getMarkdownLabel().setText("Markdown ");
         getMarkdownLabel().setStyle("-fx-font-size: 20px;");
     }
     private void initializeHtmlLabel() {
@@ -62,10 +62,10 @@ public class PptxToMarkDownView extends PptxToMarkdownViewModel {
 
         VBox topLayout = new VBox(menuBar, fileInputLayout); // Combine the menuBar and fileInputLayout
 
-        BorderPane root = new BorderPane();
-        root.setTop(topLayout);
-        root.setCenter(splitPane);
-        root.setBottom(getProgressBar());
+        setRoot(new BorderPane());
+        getRoot().setTop(topLayout);
+        getRoot().setCenter(splitPane);
+        getRoot().setBottom(getProgressBar());
 
         //if the markdownOutput is modified, set the modified flag to true
         getMarkdownOutput().textProperty().addListener((observable, oldValue, newValue) -> {
@@ -74,9 +74,9 @@ public class PptxToMarkDownView extends PptxToMarkdownViewModel {
         });
 
         //create listeners for save and save as buttons
-        MainViewHelper.saveFileListeners(root, view);
+        MainViewHelper.isModified(view);
 
-        return new Scene(root);
+        return new Scene(getRoot());
     }
 
     public void updateHtmlPreview(String markdown) {

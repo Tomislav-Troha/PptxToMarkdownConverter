@@ -22,7 +22,7 @@ public class App extends Application {
         Scene scene = view.createScene(view);
         scene.getStylesheets().add(getClass().getResource("/styles.css").toExternalForm());
 
-        primaryStage.setTitle("Pptx to Markdown");
+        primaryStage.setTitle("Pptx to Markdown Converter");
         primaryStage.setScene(scene);
         primaryStage.setMaximized(true);
         primaryStage.show();

@@ -1,5 +1,6 @@
 package com.tomislav.pptxtomarkdown.menu;
 
+import com.tomislav.pptxtomarkdown.helpers.MainViewHelper;
 import com.tomislav.pptxtomarkdown.view.PptxToMarkDownView;
 import javafx.scene.control.Menu;
 import javafx.scene.control.MenuItem;
@@ -24,6 +25,11 @@ public class EditFileMenu {
         redoItem.setAccelerator(KeyCombination.keyCombination("Ctrl+Y"));
         redoItem.setOnAction(event -> view.getMarkdownOutput().redo());
         menuItems.add(redoItem);
+
+        MenuItem saveItem = new MenuItem("Save");
+        saveItem.setAccelerator(KeyCombination.keyCombination("Ctrl+S"));
+        saveItem.setOnAction(event -> MainViewHelper.saveFileListeners(view));
+        menuItems.add(saveItem);
 
         SeparatorMenuItem separator = new SeparatorMenuItem();
         menuItems.add(separator);

@@ -7,16 +7,18 @@ import javafx.beans.property.SimpleBooleanProperty;
 import javafx.scene.control.Label;
 import javafx.scene.control.ProgressBar;
 import javafx.scene.control.TextArea;
+import javafx.scene.layout.BorderPane;
 import javafx.scene.web.WebView;
 
 import java.io.File;
+import java.io.Serializable;
 
 public class PptxToMarkdownViewModel {
 
     public PptxToMarkdownViewModel(){
 
     }
-
+    private String title;
     private TextArea markdownOutput;
     private WebView htmlPreview;
     private ProgressBar progressBar = null;
@@ -26,11 +28,24 @@ public class PptxToMarkdownViewModel {
     private Label markdownLabel;
     private Label htmlLabel;
     private File saveLocation = null;
+    private BorderPane root;
     public final MarkdownToHtmlConverter htmlConverter = new MarkdownToHtmlConverter();
 
 
     //Properties
     //setters and getters for markdown label
+    public String getTitle() {
+        return title;
+    }
+    public void setTitle(String title) {
+        this.title = title;
+    }
+    public BorderPane getRoot() {
+        return root;
+    }
+    public void setRoot(BorderPane root) {
+        this.root = root;
+    }
     public TextArea getMarkdownOutput() {
         return markdownOutput;
     }
