@@ -86,37 +86,6 @@ public class PptxExtractorHelper {
         return resizedImage;
     }
 
-
-    public static List<List<List<String>>> extractTables(String filePath) throws IOException {
-        List<List<List<String>>> tables = new ArrayList<>();
-
-        try (FileInputStream fis = new FileInputStream(filePath);
-             XMLSlideShow ppt = new XMLSlideShow(fis)) {
-
-            for (XSLFSlide slide : ppt.getSlides()) {
-                for (XSLFShape shape : slide.getShapes()) {
-                    if (shape instanceof XSLFTable) {
-                        XSLFTable table = (XSLFTable) shape;
-                        List<List<String>> tableData = new ArrayList<>();
-
-                        for (int rowIndex = 0; rowIndex < table.getNumberOfRows(); rowIndex++) {
-                            List<String> rowData = new ArrayList<>();
-                            for (int colIndex = 0; colIndex < table.getNumberOfColumns(); colIndex++) {
-                                XSLFTableCell cell = table.getCell(rowIndex, colIndex);
-                                rowData.add(cell.getText());
-                            }
-                            tableData.add(rowData);
-                        }
-
-                        tables.add(tableData);
-                    }
-                }
-            }
-        }
-
-        return tables;
-    }
-
     private static List<String> extractMetadataPptx(String filePath) throws IOException {
         List<String> slideContents = new ArrayList<>();
 
