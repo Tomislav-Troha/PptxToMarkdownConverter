@@ -26,13 +26,19 @@ public class EditFileMenu {
         redoItem.setOnAction(event -> view.getMarkdownOutput().redo());
         menuItems.add(redoItem);
 
+        menuItems.add(new SeparatorMenuItem());
+
         MenuItem saveItem = new MenuItem("Save");
         saveItem.setAccelerator(KeyCombination.keyCombination("Ctrl+S"));
         saveItem.setOnAction(event -> MainViewHelper.saveFileListeners(view));
         menuItems.add(saveItem);
 
-        SeparatorMenuItem separator = new SeparatorMenuItem();
-        menuItems.add(separator);
+        MenuItem saveAsMenuItem = new MenuItem("Save As..");
+        saveAsMenuItem.setAccelerator(KeyCombination.keyCombination("Ctrl+Shift+S"));
+        saveAsMenuItem.setOnAction(event -> MainViewHelper.saveAsFileListeners(view));
+        menuItems.add(saveAsMenuItem);
+
+        menuItems.add(new SeparatorMenuItem());
 
         MenuItem cutItem = new MenuItem("Cut");
         cutItem.setAccelerator(KeyCombination.keyCombination("Ctrl+X"));

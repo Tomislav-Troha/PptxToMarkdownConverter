@@ -9,6 +9,8 @@ import javafx.scene.layout.*;
 import javafx.stage.FileChooser;
 import javafx.stage.Stage;
 import javafx.util.Duration;
+
+import java.io.File;
 import java.io.IOException;
 import java.nio.file.Files;
 
@@ -23,10 +25,10 @@ public class MainViewHelper {
         //if the markdownOutput is modified, set the markdownLabel text to "Markdown *" to indicate that the file is modified
         view.getModified().addListener((observable, oldValue, newValue) -> {
             if (newValue) {
-                view.getMarkdownLabel().setText("Markdown * " + view.getTitle());
+                view.getMarkdownLabel().setText("Markdown * " + (view.getTitle() != null ? "- " + view.getTitle() : ""));
                 view.getMarkdownLabel().setStyle("-fx-font-weight: bold; -fx-font-size: 20px;");
             } else {
-                view.getMarkdownLabel().setText("Markdown " + view.getTitle());
+                view.getMarkdownLabel().setText("Markdown " + (view.getTitle() != null ? "- " + view.getTitle() : ""));
                 view.getMarkdownLabel().setStyle("-fx-font-weight: normal; -fx-font-size: 20px;");
             }
         });
@@ -55,10 +57,12 @@ public class MainViewHelper {
                     view.getModified().set(false);
                     // If a Markdown file was loaded and saved, update the markdownFileLoaded flag
                     if (view.getMarkdownFileLoaded().get()) {
+//                        view.setTitle(view.getSaveLocation().getName());
                         view.getMarkdownFileLoaded().set(true);
                     }
                     // If a PowerPoint file was loaded and the markdown was saved, update the pptxFileLoaded flag
                     if (view.getPptxFileLoaded().get()) {
+//                        view.setTitle(view.getSaveLocation().getName());
                         view.getPptxFileLoaded().set(true);
                     }
                 } catch (IOException e) {
@@ -67,5 +71,37 @@ public class MainViewHelper {
             }
         }
     }
+    public static void saveAsFileListeners(PptxToMarkDownView view){
+        String markdown = view.getMarkdownOutput().getText();
+
+        FileChooser fileChooser = new FileChooser();
+        fileChooser.setTitle("Save Markdown As");
+        fileChooser.getExtensionFilters().addAll(
+                new FileChooser.ExtensionFilter("Markdown", "*.md"),
+                new FileChooser.ExtensionFilter("All Files", "*.*"));
+
+        File chosenFile = fileChooser.showSaveDialog(new Stage());
+
+        if(chosenFile != null){
+            try {
+                Files.writeString(chosenFile.toPath(), markdown);
+
+                view.setSaveLocation(chosenFile);
+
+                view.setTitle(chosenFile.getName());
+
+                view.getModified().set(false);
+
+                if(view.getMarkdownFileLoaded().get()){
+                    view.getMarkdownFileLoaded().set(true);
+                } else if(view.getPptxFileLoaded().get()){
+                    view.getPptxFileLoaded().set(true);
+                }
+            } catch (IOException e) {
+                NotificationManager.showMessageBox("Error in saving file " + e.getMessage(), Alert.AlertType.ERROR, new Duration(3));
+            }
+        }
+    }
+
 
 }

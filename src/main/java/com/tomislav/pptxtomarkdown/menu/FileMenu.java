@@ -43,6 +43,7 @@ public class FileMenu {
                 File selectedFile = fileChooser.showOpenDialog(new Stage());
                 try {
                     if (selectedFile != null) {
+                        view.setTitle(selectedFile.getName());
                         ProgressBar progressBar = view.getProgressBar();
                         progressBar.setVisible(true);
 
@@ -65,15 +66,20 @@ public class FileMenu {
                                 super.succeeded();
                                 NotificationManager.showMessageBox("File upload completed successfully", Alert.AlertType.INFORMATION, Duration.seconds(3));
                                 view.getPptxFileLoaded().set(true);
-                                view.setTitle(selectedFile.getName());
                                 progressBar.setVisible(false);
                             }
 
                             @Override
                             protected void failed() {
                                 super.failed();
-                                NotificationManager.showMessageBox("Error while uploading file!", Alert.AlertType.ERROR, Duration.seconds(3));
-                                progressBar.setVisible(false);
+//                                NotificationManager.showMessageBox("Error while uploading file!", Alert.AlertType.ERROR, Duration.seconds(3));
+                                try {
+                                    progressBar.setVisible(false);
+                                    throw new Exception("Error while uploading file!");
+                                } catch (Exception e) {
+                                    NotificationManager.showMessageBox(e.getMessage(), Alert.AlertType.ERROR, Duration.seconds(3));
+                                }
+
                             }
                         };
                         new Thread(task).start();
@@ -94,6 +100,7 @@ public class FileMenu {
                 File selectedFile = fileChooser.showOpenDialog(new Stage());
                 try {
                     if (selectedFile != null) {
+                        view.setTitle(selectedFile.getName());
                         ProgressBar progressBar = view.getProgressBar();
                         progressBar.setVisible(true);
 

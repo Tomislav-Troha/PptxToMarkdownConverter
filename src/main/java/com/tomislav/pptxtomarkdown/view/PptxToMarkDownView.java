@@ -73,7 +73,6 @@ public class PptxToMarkDownView extends PptxToMarkdownViewModel {
             getMarkdownFileLoaded().set(false);
         });
 
-        //create listeners for save and save as buttons
         MainViewHelper.isModified(view);
 
         return new Scene(getRoot());
