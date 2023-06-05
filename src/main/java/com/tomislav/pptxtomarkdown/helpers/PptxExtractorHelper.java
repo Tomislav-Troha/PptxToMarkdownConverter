@@ -20,6 +20,8 @@ import java.io.InputStream;
 import java.util.ArrayList;
 import java.util.Base64;
 import java.util.List;
+import java.util.regex.Matcher;
+import java.util.regex.Pattern;
 
 public class PptxExtractorHelper {
 
@@ -103,11 +105,17 @@ public class PptxExtractorHelper {
                         if (textShape.isPlaceholder() && textShape.getTextPlaceholder() == TextShape.TextPlaceholder.TITLE) {
                             stringSlideContents.append("## ").append(textShape.getText());
                         } else {
-                            String text = textShape.getText().replaceAll("(?m)^", "- ").replaceAll("\n", "\n\n");
-                            stringSlideContents.append("\n\n").append(text);
+                            String text = textShape.getText();
+                            String[] lines = text.split("\n");
+
+                            for (String line : lines) {
+                                // Only append the bullet if the line is not empty
+                                if (!line.trim().isEmpty()) {
+                                    stringSlideContents.append("\n\n- ").append(line);
+                                }
+                            }
                         }
                     }
-
                     //extract images from pptx
                     if (shape instanceof XSLFPictureShape) {
                         //process image
@@ -129,6 +137,7 @@ public class PptxExtractorHelper {
 
         return slideContents;
     }
+
 
     private static List<String> extractMetadataPpt(String filePath) throws IOException {
         List<String> slideContents = new ArrayList<>();

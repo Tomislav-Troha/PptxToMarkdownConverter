@@ -2,6 +2,7 @@ package com.tomislav.pptxtomarkdown.helpers;
 
 import com.tomislav.pptxtomarkdown.menu.FileMenu;
 import com.tomislav.pptxtomarkdown.menu.EditFileMenu;
+import com.tomislav.pptxtomarkdown.menu.FormatMenu;
 import com.tomislav.pptxtomarkdown.menu.ParagraphMenu;
 import com.tomislav.pptxtomarkdown.view.PptxToMarkDownView;
 import javafx.scene.control.*;
@@ -46,6 +47,8 @@ public class MenuCreatorHelper {
         paragraphMenu.getItems().addAll(ParagraphMenu.createParagraphMenuItem(view));
 
         Menu formatMenu = new Menu("Format");
+        formatMenu.getItems().addAll(FormatMenu.createFormatMenu(view));
+
         Menu viewMenu = new Menu("View");
         Menu themesMenu = new Menu("Themes");
         Menu helpMenu = new Menu("Help");

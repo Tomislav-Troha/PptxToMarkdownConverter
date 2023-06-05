@@ -11,6 +11,9 @@ import javafx.scene.layout.*;
 import javafx.scene.web.WebEngine;
 import javafx.scene.web.WebView;
 
+import java.util.regex.Matcher;
+import java.util.regex.Pattern;
+
 public class PptxToMarkDownView extends PptxToMarkdownViewModel {
 
     public PptxToMarkDownView() {
@@ -37,6 +40,7 @@ public class PptxToMarkDownView extends PptxToMarkdownViewModel {
         getMarkdownOutput().setStyle("-fx-font-size: 18px;");
         getMarkdownOutput().setPromptText("Markdown view");
         getMarkdownOutput().setEditable(true);
+
         getMarkdownOutput().textProperty().addListener((observable, oldValue, newValue) -> updateHtmlPreview(newValue));
     }
     private void initializeHtmlPreview() {
