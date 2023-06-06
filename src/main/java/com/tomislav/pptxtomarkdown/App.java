@@ -3,6 +3,7 @@ import com.tomislav.pptxtomarkdown.controller.PptxToMarkdownController;
 import com.tomislav.pptxtomarkdown.view.PptxToMarkDownView;
 import javafx.application.Application;
 import javafx.scene.Scene;
+import javafx.scene.image.Image;
 import javafx.stage.Stage;
 
 
@@ -18,6 +19,8 @@ public class App extends Application {
         mainStage = primaryStage;
         PptxToMarkDownView view = new PptxToMarkDownView();
         PptxToMarkdownController controller = new PptxToMarkdownController(view);
+
+        mainStage.getIcons().add(new Image("/pptx-to-markdown-converter-logo.png"));
 
         Scene scene = view.createScene(view);
         scene.getStylesheets().add(getClass().getResource("/styles.css").toExternalForm());

@@ -4,7 +4,6 @@ import com.tomislav.pptxtomarkdown.utils.NotificationManager;
 import com.tomislav.pptxtomarkdown.view.PptxToMarkDownView;
 import javafx.scene.Node;
 import javafx.scene.control.*;
-import javafx.scene.input.KeyCode;
 import javafx.scene.layout.*;
 import javafx.stage.FileChooser;
 import javafx.stage.Stage;

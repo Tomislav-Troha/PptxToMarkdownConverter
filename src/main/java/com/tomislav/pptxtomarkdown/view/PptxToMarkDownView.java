@@ -5,6 +5,7 @@ import com.tomislav.pptxtomarkdown.helpers.MainViewHelper;
 import com.tomislav.pptxtomarkdown.helpers.MenuCreatorHelper;
 import com.tomislav.pptxtomarkdown.model.PptxToMarkdownViewModel;
 import javafx.beans.property.SimpleBooleanProperty;
+import javafx.geometry.Insets;
 import javafx.scene.Scene;
 import javafx.scene.control.*;
 import javafx.scene.layout.*;
@@ -27,18 +28,21 @@ public class PptxToMarkDownView extends PptxToMarkdownViewModel {
     private void initializeMarkdownLabel() {
         setMarkdownLabel(new Label());
         getMarkdownLabel().setText("Markdown ");
-        getMarkdownLabel().setStyle("-fx-font-size: 20px;");
+        getMarkdownLabel().setStyle("-fx-font-size: 24px; -fx-font-weight: bold;");
+        getMarkdownLabel().setPadding(new Insets(10, 0, 0, 0)); // 10 pixels of padding to the top
+
     }
     private void initializeHtmlLabel() {
         setHtmlLabel(new Label());
         gethtmlLabel().setText("Markdown preview");
-        gethtmlLabel().setStyle("-fx-font-size: 20px;");
+        gethtmlLabel().setStyle("-fx-font-size: 24px; -fx-font-weight: bold;");
+        gethtmlLabel().setPadding(new Insets(10, 0, 0, 0)); // 10 pixels of padding to the top
     }
     private void initializeMarkdownOutput() {
         setMarkdownOutput(new TextArea());
         getMarkdownOutput().setPrefSize(794, 1123);
         getMarkdownOutput().setStyle("-fx-font-size: 18px;");
-        getMarkdownOutput().setPromptText("Markdown view");
+        getMarkdownOutput().setPromptText("Type markdown here...");
         getMarkdownOutput().setEditable(true);
 
         getMarkdownOutput().textProperty().addListener((observable, oldValue, newValue) -> updateHtmlPreview(newValue));
@@ -59,7 +63,10 @@ public class PptxToMarkDownView extends PptxToMarkdownViewModel {
 
         HBox fileInputLayout = new HBox(10);
         VBox markdownLayout = MainViewHelper.createLayout(getMarkdownLabel(), getMarkdownOutput());
+        markdownLayout.setAlignment(javafx.geometry.Pos.CENTER);
+
         VBox htmlLayout = MainViewHelper.createLayout(gethtmlLabel(), getHtmlPreview());
+        htmlLayout.setAlignment(javafx.geometry.Pos.CENTER);
 
         SplitPane splitPane = new SplitPane(markdownLayout, htmlLayout);
         splitPane.setDividerPositions(0.5);

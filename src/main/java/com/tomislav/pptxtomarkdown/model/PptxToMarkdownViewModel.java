@@ -1,9 +1,7 @@
 package com.tomislav.pptxtomarkdown.model;
 
 import com.tomislav.pptxtomarkdown.utils.MarkdownToHtmlConverter;
-import com.tomislav.pptxtomarkdown.view.PptxToMarkDownView;
 import javafx.beans.property.BooleanProperty;
-import javafx.beans.property.SimpleBooleanProperty;
 import javafx.scene.control.Label;
 import javafx.scene.control.ProgressBar;
 import javafx.scene.control.TextArea;
@@ -11,7 +9,6 @@ import javafx.scene.layout.BorderPane;
 import javafx.scene.web.WebView;
 
 import java.io.File;
-import java.io.Serializable;
 
 public class PptxToMarkdownViewModel {
 
