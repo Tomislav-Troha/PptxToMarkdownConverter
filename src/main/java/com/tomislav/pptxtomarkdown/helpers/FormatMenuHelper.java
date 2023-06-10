@@ -6,7 +6,12 @@ import javafx.scene.control.Alert;
 import javafx.scene.control.IndexRange;
 import javafx.stage.FileChooser;
 import javafx.util.Duration;
+import org.apache.poi.xslf.usermodel.XSLFPictureShape;
 
+import javax.imageio.ImageIO;
+import java.awt.*;
+import java.awt.image.BufferedImage;
+import java.io.ByteArrayOutputStream;
 import java.io.File;
 import java.io.IOException;
 import java.nio.file.Files;
@@ -44,9 +49,19 @@ public class FormatMenuHelper {
     public static void insertLocalImage(PptxToMarkDownView view) {
         File selectedFile = selectImage();
         if (selectedFile != null) {
-            String base64ImageData = convertImageToBase64(selectedFile);
-            String imageDataInMarkdown = String.format("<img src=\"data:image/png;base64,%s\" alt=\"image\" style=\"display: block; margin: auto;\">", base64ImageData);
-            view.getMarkdownOutput().appendText("\n" + imageDataInMarkdown);
+            String base64ImageData = convertImageToBase64(selectedFile, 300, 400);
+
+            String fileName = selectedFile.getName();
+            int lastPeriodPos = fileName.lastIndexOf('.');
+            String extension = "";
+            if (lastPeriodPos > 0) {
+                extension = fileName.substring(lastPeriodPos+1);
+            }
+            String markdownFormat = "![](data:%s;base64,%s)";
+
+            String imageTag = String.format(markdownFormat, extension, base64ImageData);
+
+            view.getMarkdownOutput().appendText("\n" + imageTag);
         }
     }
 
@@ -59,17 +74,29 @@ public class FormatMenuHelper {
         return fileChooser.showOpenDialog(null);
     }
 
-    private static String convertImageToBase64(File selectedFile) {
+    private static String convertImageToBase64(File selectedFile, int width, int height) {
         try {
-            byte[] fileContent = Files.readAllBytes(selectedFile.toPath());
-            return Base64.getEncoder().encodeToString(fileContent);
+            BufferedImage originalImage = ImageIO.read(selectedFile);
+            Image tmp = originalImage.getScaledInstance(width, height, Image.SCALE_SMOOTH);
+            BufferedImage resizedImage = new BufferedImage(width, height, BufferedImage.TYPE_INT_ARGB);
+            Graphics2D g2d = resizedImage.createGraphics();
+            g2d.drawImage(tmp, 0, 0, null);
+            g2d.dispose();
+
+            ByteArrayOutputStream baos = new ByteArrayOutputStream();
+            ImageIO.write(resizedImage, "png", baos);
+            byte[] bytes = baos.toByteArray();
+
+            return Base64.getEncoder().encodeToString(bytes);
         } catch (IOException e) {
             e.printStackTrace();
             return null;
         }
     }
 
-    public static void insertImage(PptxToMarkDownView view) {
+    public static void decreaseImageSize(PptxToMarkDownView view) {
+
+
 
     }
 }

@@ -43,7 +43,7 @@ public class PptxExtractorHelper {
 
 
     //helper method for extract images from pptx
-    private static String processPictureXSLFShape(XSLFPictureShape pictureShape, int targetWidth, int targetHeight) throws IOException {
+    public static String processPictureXSLFShape(XSLFPictureShape pictureShape, int targetWidth, int targetHeight) throws IOException {
         XSLFPictureData pictureData = pictureShape.getPictureData();
         BufferedImage originalImage = ImageIO.read(new ByteArrayInputStream(pictureData.getData()));
         BufferedImage resizedImage = resizeImage(originalImage, targetWidth, targetHeight);
@@ -123,8 +123,9 @@ public class PptxExtractorHelper {
 
                         //get image type
                         String pictureData = ((XSLFPictureShape) shape).getPictureData().getContentType();
-                        String cssTag = "<img src=\"data:%s;base64,%s\" alt=\"image\" style=\"display: block; margin: auto;\">";
-                        String imageTag = String.format(cssTag, pictureData, base64Image);
+                        String markdownFormat = "![](data:%s;base64,%s)";
+
+                        String imageTag = String.format(markdownFormat, pictureData, base64Image);
 
                         stringSlideContents.append("\n\n").append(imageTag);
                     }

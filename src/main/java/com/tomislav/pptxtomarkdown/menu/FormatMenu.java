@@ -1,10 +1,8 @@
 package com.tomislav.pptxtomarkdown.menu;
 
 import com.tomislav.pptxtomarkdown.helpers.FormatMenuHelper;
-import com.tomislav.pptxtomarkdown.utils.NotificationManager;
 import com.tomislav.pptxtomarkdown.view.PptxToMarkDownView;
 import javafx.scene.control.*;
-import javafx.util.Duration;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -61,7 +59,10 @@ public class FormatMenu {
         MenuItem insertLocalImageItem = new MenuItem("Insert Local Image");
         insertLocalImageItem.setOnAction(e -> FormatMenuHelper.insertLocalImage(view));
 
-        imageMenu.getItems().addAll(insertLocalImageItem);
+        MenuItem decreaseImageSizeItem = new MenuItem("Decrease Image Size");
+        decreaseImageSizeItem.setOnAction(e -> FormatMenuHelper.decreaseImageSize(view));
+
+        imageMenu.getItems().addAll(insertLocalImageItem, new SeparatorMenuItem());
         menus.add(imageMenu);
 
         menus.add(new SeparatorMenuItem());

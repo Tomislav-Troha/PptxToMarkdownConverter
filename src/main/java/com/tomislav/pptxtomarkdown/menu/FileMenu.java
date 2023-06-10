@@ -151,7 +151,13 @@ public class FileMenu {
 
         MenuItem pdfItem = new MenuItem("PDF");
         pdfItem.setOnAction(e -> {
-            ExportHelper.html_to_pdf_serializeDocument(htmlPreview);
+            try{
+                ExportHelper.html_to_pdf_serializeDocument(htmlPreview);
+            }
+            catch (Exception ex){
+                NotificationManager.showMessageBox(ex.getMessage(), Alert.AlertType.ERROR, Duration.seconds(3));
+            }
+
         });
 
         MenuItem htmlItem = new MenuItem("HTML");
