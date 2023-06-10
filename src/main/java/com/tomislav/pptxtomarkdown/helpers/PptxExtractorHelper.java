@@ -43,7 +43,7 @@ public class PptxExtractorHelper {
 
 
     //helper method for extract images from pptx
-    public static String processPictureXSLFShape(XSLFPictureShape pictureShape, int targetWidth, int targetHeight) throws IOException {
+    private static String processPictureXSLFShape(XSLFPictureShape pictureShape, int targetWidth, int targetHeight) throws IOException {
         XSLFPictureData pictureData = pictureShape.getPictureData();
         BufferedImage originalImage = ImageIO.read(new ByteArrayInputStream(pictureData.getData()));
         BufferedImage resizedImage = resizeImage(originalImage, targetWidth, targetHeight);
