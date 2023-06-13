@@ -19,9 +19,8 @@ import java.io.IOException;
 import java.io.InputStream;
 import java.util.ArrayList;
 import java.util.Base64;
+import java.util.Collections;
 import java.util.List;
-import java.util.regex.Matcher;
-import java.util.regex.Pattern;
 
 public class PptxExtractorHelper {
 
@@ -40,8 +39,6 @@ public class PptxExtractorHelper {
             return null;
         }
     }
-
-
     //helper method for extract images from pptx
     private static String processPictureXSLFShape(XSLFPictureShape pictureShape, int targetWidth, int targetHeight) throws IOException {
         XSLFPictureData pictureData = pictureShape.getPictureData();
@@ -54,7 +51,6 @@ public class PptxExtractorHelper {
 
         return Base64.getEncoder().encodeToString(baos.toByteArray());
     }
-
     //helper method for extract images from ppt
     private static String processPictureHSLFShape(HSLFPictureShape pictureShape, int targetWidth, int targetHeight) throws IOException {
         HSLFPictureData pictureData = pictureShape.getPictureData();
@@ -67,7 +63,6 @@ public class PptxExtractorHelper {
 
         return Base64.getEncoder().encodeToString(baos.toByteArray());
     }
-
     private static BufferedImage resizeImage(BufferedImage originalImage, int targetWidth, int targetHeight) {
         // Calculate the new dimensions while maintaining the aspect ratio
         double scaleFactor = Math.min((double) targetWidth / originalImage.getWidth(), (double) targetHeight / originalImage.getHeight());
@@ -87,7 +82,31 @@ public class PptxExtractorHelper {
 
         return resizedImage;
     }
+    private static String convertTableToMarkdown(XSLFTable table) {
+        StringBuilder markdownTable = new StringBuilder();
 
+        // Iterate over the rows and cells of the table
+        for (XSLFTableRow row : table) {
+            markdownTable.append("|"); // Start of a row in Markdown
+
+            for (XSLFTableCell cell : row) {
+                String cellText = cell.getText();
+
+                // Append the cell text to the row
+                markdownTable.append(" ").append(cellText).append(" |");
+            }
+
+            markdownTable.append("\n"); // End of a row in Markdown
+
+            // Add a separator line after the header row
+            if (table.getRows().indexOf(row) == 0) {
+                markdownTable.append("|");
+                markdownTable.append(" --- |".repeat(row.getCells().size()));
+                markdownTable.append("\n");
+            }
+        }
+        return markdownTable.toString();
+    }
     private static List<String> extractMetadataPptx(String filePath) throws IOException {
         List<String> slideContents = new ArrayList<>();
 
@@ -108,10 +127,15 @@ public class PptxExtractorHelper {
                             String text = textShape.getText();
                             String[] lines = text.split("\n");
 
+                            int indentLevel = 2; // Set the level of indentation you want
+                            String indent = String.join("", Collections.nCopies(indentLevel, " "));
+
                             for (String line : lines) {
-                                // Only append the bullet if the line is not empty
-                                if (!line.trim().isEmpty()) {
+                                if (!line.trim().isEmpty() && line.contains(":")) {
                                     stringSlideContents.append("\n\n- ").append(line);
+                                }
+                                else if (!line.trim().isEmpty() && !line.trim().startsWith("-")) {
+                                    stringSlideContents.append("\n\n").append(indent).append("- ").append(line);
                                 }
                             }
                         }
@@ -129,6 +153,15 @@ public class PptxExtractorHelper {
 
                         stringSlideContents.append("\n\n").append(imageTag);
                     }
+
+                    //extract tables from pptx
+                    if (shape instanceof XSLFTable) {
+                        XSLFTable table = (XSLFTable) shape;
+
+                        // Convert the table to Markdown and append it to the slide contents
+                        String markdownTable = convertTableToMarkdown(table);
+                        stringSlideContents.append("\n\n").append(markdownTable);
+                    }
                 }
                 slideContents.add(stringSlideContents.toString().trim());
             }
@@ -138,8 +171,6 @@ public class PptxExtractorHelper {
 
         return slideContents;
     }
-
-
     private static List<String> extractMetadataPpt(String filePath) throws IOException {
         List<String> slideContents = new ArrayList<>();
 
@@ -182,9 +213,6 @@ public class PptxExtractorHelper {
         }
     return slideContents;
 }
-
-
-
     public static String formatMarkdownOutput(List<String> slideContents) {
         StringBuilder output = new StringBuilder();
         for (String slideContent : slideContents) {

@@ -13,10 +13,10 @@ public class MarkdownGenerator {
             markdown.append("# ").append(metadata.getTitle()).append("\n\n");
         }
 
-//        // Add author
-//        if (metadata.getAuthor() != null && !metadata.getAuthor().isEmpty()) {
-//            markdown.append("Autor: ").append(metadata.getAuthor()).append("\n\n");
-//        }
+        // Add author
+        if (metadata.getAuthor() != null && !metadata.getAuthor().isEmpty()) {
+            markdown.append("### Autor: ").append(metadata.getAuthor()).append("\n\n");
+        }
 //
 //        // Add slide count
 //        markdown.append("Broj slajdova: ").append(metadata.getSlideCount()).append("\n\n");

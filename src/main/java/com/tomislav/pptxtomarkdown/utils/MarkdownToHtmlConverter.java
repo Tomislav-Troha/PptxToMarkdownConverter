@@ -1,20 +1,27 @@
 package com.tomislav.pptxtomarkdown.utils;
 
-import com.tomislav.pptxtomarkdown.css.Fonts;
+import com.vladsch.flexmark.ext.tables.TablesExtension;
 import com.vladsch.flexmark.html.HtmlRenderer;
 import com.vladsch.flexmark.parser.Parser;
 import com.vladsch.flexmark.util.ast.Document;
+import com.vladsch.flexmark.util.data.MutableDataSet;
 
 import java.io.BufferedReader;
 import java.io.IOException;
 import java.io.InputStream;
 import java.io.InputStreamReader;
+import java.util.List;
 
 public class MarkdownToHtmlConverter {
 
     public String convertMarkdownToHtml(String markdown) {
-        Parser parser = Parser.builder().build();
-        HtmlRenderer renderer = HtmlRenderer.builder().build();
+
+        MutableDataSet options = new MutableDataSet();
+
+        options.set(Parser.EXTENSIONS, List.of(TablesExtension.create()));
+
+        Parser parser = Parser.builder(options).build();
+        HtmlRenderer renderer = HtmlRenderer.builder(options).build();
 
         Document document = parser.parse(markdown);
         String html = renderer.render(document);
