@@ -10,6 +10,9 @@ import org.apache.poi.openxml4j.opc.OPCPackage;
 import org.apache.poi.sl.usermodel.PictureData;
 import org.apache.poi.sl.usermodel.TextShape;
 import org.apache.poi.xslf.usermodel.*;
+import org.apache.xmlbeans.XmlObject;
+import org.openxmlformats.schemas.drawingml.x2006.chart.*;
+
 import javax.imageio.ImageIO;
 import java.awt.*;
 import java.awt.image.BufferedImage;
@@ -85,20 +88,16 @@ public class PptxExtractorHelper {
     private static String convertTableToMarkdown(XSLFTable table) {
         StringBuilder markdownTable = new StringBuilder();
 
-        // Iterate over the rows and cells of the table
         for (XSLFTableRow row : table) {
-            markdownTable.append("|"); // Start of a row in Markdown
+            markdownTable.append("|");
 
             for (XSLFTableCell cell : row) {
                 String cellText = cell.getText();
 
-                // Append the cell text to the row
                 markdownTable.append(" ").append(cellText).append(" |");
             }
-
             markdownTable.append("\n"); // End of a row in Markdown
 
-            // Add a separator line after the header row
             if (table.getRows().indexOf(row) == 0) {
                 markdownTable.append("|");
                 markdownTable.append(" --- |".repeat(row.getCells().size()));
@@ -107,6 +106,62 @@ public class PptxExtractorHelper {
         }
         return markdownTable.toString();
     }
+
+    private static String extractChartFromSlide(XSLFGraphicFrame shape) {
+        StringBuilder markdownTable = new StringBuilder();
+        XSLFGraphicFrame graphicFrame = (XSLFGraphicFrame) shape;
+        XmlObject[] xmlObjects = graphicFrame.getXmlObject().selectPath("declare namespace c='http://schemas.openxmlformats.org/drawingml/2006/main' .//c:chartSpace");
+
+        for (XmlObject xmlObject : xmlObjects) {
+            if (xmlObject instanceof CTChartSpace) {
+                CTChartSpace chartSpace = (CTChartSpace) xmlObject;
+                CTPlotArea plotArea = chartSpace.getChart().getPlotArea();
+
+                // handle bar charts
+                for (CTBarChart barChart : plotArea.getBarChartList()) {
+                    for (CTBarSer barSeries : barChart.getSerList()) {
+                        // Extract the category (x-axis) data
+                        CTStrData categoryData = barSeries.getCat().getStrRef().getStrCache();
+
+                        // Extract the value (y-axis) data
+                        CTNumData valueData = barSeries.getVal().getNumRef().getNumCache();
+
+                        // Build the markdown table header
+                        if (markdownTable.length() == 0) {
+                            markdownTable.append("| Category | Value |\n| --- | --- |\n");
+                        }
+
+                        // Build the markdown table rows
+                        for (int i = 0; i < categoryData.getPtCount().getVal(); i++) {
+                            String category = categoryData.getPtArray(i).getV();
+                            String value = valueData.getPtArray(i).getV();
+                            markdownTable.append("| ").append(category).append(" | ").append(value).append(" |\n");
+                        }
+                    }
+                }
+
+                // handle line charts
+                for (CTLineChart lineChart : plotArea.getLineChartList()) {
+                    for (CTLineSer lineSeries : lineChart.getSerList()) {
+                        // extract data from line series and append to markdownTable
+                    }
+                }
+
+                // handle pie charts
+                for (CTPieChart pieChart : plotArea.getPieChartList()) {
+                    for (CTPieSer pieSeries : pieChart.getSerList()) {
+                        // extract data from pie series and append to markdownTable
+                    }
+                }
+
+                // handle other types of charts as necessary...
+            }
+        }
+
+        return markdownTable.toString();
+    }
+
+
     private static List<String> extractMetadataPptx(String filePath) throws IOException {
         List<String> slideContents = new ArrayList<>();
 
@@ -161,6 +216,13 @@ public class PptxExtractorHelper {
                         // Convert the table to Markdown and append it to the slide contents
                         String markdownTable = convertTableToMarkdown(table);
                         stringSlideContents.append("\n\n").append(markdownTable);
+                    }
+
+                    //extract graphs from pptx
+                    if (shape instanceof XSLFGraphicFrame) {
+                        XSLFGraphicFrame graphicFrame = (XSLFGraphicFrame) shape;
+                        String markdownCharts = extractChartFromSlide(graphicFrame);
+                        stringSlideContents.append("\n\n").append(markdownCharts);
                     }
                 }
                 slideContents.add(stringSlideContents.toString().trim());

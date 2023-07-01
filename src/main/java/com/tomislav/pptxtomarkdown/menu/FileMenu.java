@@ -20,7 +20,7 @@ import java.io.IOException;
 import java.nio.file.Files;
 import java.util.Optional;
 
-public class FileMenu {
+public class FileMenu extends MarkdownGenerator {
 
     public static MenuItem ChooseMenuHandler(PptxToMarkDownView view) {
         final PptxExtractor extractor = new PptxExtractor();
@@ -159,18 +159,7 @@ public class FileMenu {
             }
 
         });
-
-        MenuItem htmlItem = new MenuItem("HTML");
-        htmlItem.setOnAction(e -> {
-            // Handle HTML export
-        });
-
-        MenuItem markdownItem = new MenuItem("MARKDOWN");
-        markdownItem.setOnAction(e -> {
-            // Handle Markdown export
-        });
-
-        exportMenu.getItems().addAll(pdfItem, htmlItem, markdownItem);
+        exportMenu.getItems().addAll(pdfItem);
 
         return exportMenu;
     }

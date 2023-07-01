@@ -9,7 +9,7 @@ import javafx.scene.control.*;
 
 import java.util.function.Consumer;
 
-public class MenuCreatorHelper {
+public class MenuCreatorHelper extends PptxToMarkDownView {
 
         public static MenuItem createChooseFileMenuItem(String text, Consumer<Void> action) {
             MenuItem chooseFileMenuItem = new MenuItem(text);

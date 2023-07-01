@@ -1,17 +1,13 @@
 package com.tomislav.pptxtomarkdown.utils;
 
-
-import com.sun.tools.javac.Main;
 import com.tomislav.pptxtomarkdown.App;
 import javafx.animation.PauseTransition;
 import javafx.animation.SequentialTransition;
 import javafx.animation.TranslateTransition;
 import javafx.beans.value.ChangeListener;
-import javafx.beans.value.ObservableValue;
 import javafx.geometry.Pos;
 import javafx.scene.Scene;
 import javafx.scene.control.Alert;
-import javafx.scene.control.Dialog;
 import javafx.scene.control.Label;
 import javafx.scene.layout.VBox;
 import javafx.stage.*;

@@ -1,6 +1,5 @@
 package com.tomislav.pptxtomarkdown.view;
 
-import com.tomislav.pptxtomarkdown.css.Fonts;
 import com.tomislav.pptxtomarkdown.helpers.MainViewHelper;
 import com.tomislav.pptxtomarkdown.helpers.MenuCreatorHelper;
 import com.tomislav.pptxtomarkdown.model.PptxToMarkdownViewModel;
@@ -12,8 +11,6 @@ import javafx.scene.layout.*;
 import javafx.scene.web.WebEngine;
 import javafx.scene.web.WebView;
 
-import java.util.regex.Matcher;
-import java.util.regex.Pattern;
 
 public class PptxToMarkDownView extends PptxToMarkdownViewModel {
 
@@ -56,6 +53,7 @@ public class PptxToMarkDownView extends PptxToMarkdownViewModel {
         setPptxFileLoaded(new SimpleBooleanProperty(false));
         setMarkdownFileLoaded(new SimpleBooleanProperty(false));
     }
+
 
     public Scene createScene(PptxToMarkDownView view) {
         //create menu bar
