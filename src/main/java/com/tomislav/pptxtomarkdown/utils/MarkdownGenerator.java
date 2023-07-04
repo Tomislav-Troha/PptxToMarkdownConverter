@@ -17,11 +17,9 @@ public class MarkdownGenerator {
         if (metadata.getAuthor() != null && !metadata.getAuthor().isEmpty()) {
             markdown.append("### Autor: ").append(metadata.getAuthor()).append("\n\n");
         }
-//
-//        // Add slide count
+       // Add slide count
 //        markdown.append("Broj slajdova: ").append(metadata.getSlideCount()).append("\n\n");
 
-        // Add subtitles and text
         if (metadata.getExtractedMetadata() != null && !metadata.getExtractedMetadata().isEmpty()) {
             markdown.append(metadata.getExtractedMetadata());
         }

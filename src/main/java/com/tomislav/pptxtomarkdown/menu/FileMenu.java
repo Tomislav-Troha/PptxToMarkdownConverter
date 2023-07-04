@@ -36,7 +36,6 @@ public class FileMenu extends MarkdownGenerator {
             FileChooser fileChooser = new FileChooser();
             fileChooser.getExtensionFilters().add(new FileChooser.ExtensionFilter("PowerPoint Files", "*.pptx"));
             // Choose file menu item
-            //PptxMetadata metadata = extractor.extractMetadata("C:\\Users\\tomis\\Desktop\\Upravljanje-znanjem-u-obrazovanju.pptx");
             chooseFile_MenuItem = MenuCreatorHelper.createChooseFileMenuItem("Choose pptx file", (v) -> {
                 File selectedFile = fileChooser.showOpenDialog(new Stage());
                 try {
@@ -49,7 +48,6 @@ public class FileMenu extends MarkdownGenerator {
                             @Override
                             protected Void call() {
                                 PptxMetadata metadata = extractor.extractMetadata(selectedFile.getAbsolutePath());
-                                //PptxMetadata metadata = extractor.extractMetadata("C:\\Users\\tomis\\Desktop\\Upravljanje-znanjem-u-obrazovanju.pptx");
                                 String markdown = generator.generateMarkdown(metadata);
 
                                 Platform.runLater(() -> {
@@ -63,6 +61,7 @@ public class FileMenu extends MarkdownGenerator {
                             protected void succeeded() {
                                 super.succeeded();
                                 NotificationManager.showMessageBox("File upload completed successfully", Alert.AlertType.INFORMATION, Duration.seconds(3));
+                                view.setSaveLocation(null);
                                 view.getPptxFileLoaded().set(true);
                                 progressBar.setVisible(false);
                             }
@@ -70,14 +69,12 @@ public class FileMenu extends MarkdownGenerator {
                             @Override
                             protected void failed() {
                                 super.failed();
-//                                NotificationManager.showMessageBox("Error while uploading file!", Alert.AlertType.ERROR, Duration.seconds(3));
                                 try {
                                     progressBar.setVisible(false);
                                     throw new Exception("Error while uploading file!");
                                 } catch (Exception e) {
                                     NotificationManager.showMessageBox(e.getMessage(), Alert.AlertType.ERROR, Duration.seconds(3));
                                 }
-
                             }
                         };
                         new Thread(task).start();
@@ -200,5 +197,8 @@ public class FileMenu extends MarkdownGenerator {
             // Reset the file loaded flags
             view.getMarkdownFileLoaded().set(false);
             view.getPptxFileLoaded().set(false);
+
+            view.getMarkdownLabel().setText("Markdown ");
+            view.setTitle(null);
     }
 }

@@ -13,43 +13,45 @@ public class FormatMenu {
         List<MenuItem> menus = new ArrayList<>();
 
         MenuItem strongItem = new MenuItem("Strong");
-        strongItem.setOnAction(e -> FormatMenuHelper.selectText(view, "**", "**", "\\**"));
+        strongItem.setOnAction(e -> FormatMenuHelper.selectText(view, "**", "**", strongItem, "\\**"));
         menus.add(strongItem);
 
         MenuItem emphasisItem = new MenuItem("Emphasis");
-        emphasisItem.setOnAction(e -> FormatMenuHelper.selectText(view, "*", "*", "\\*"));
+        emphasisItem.setOnAction(event -> {
+            FormatMenuHelper.selectText(view, "*", "*", emphasisItem,"\\*");
+        });
         menus.add(emphasisItem);
 
         MenuItem underlineItem = new MenuItem("Underline");
-        underlineItem.setOnAction(e -> FormatMenuHelper.selectText(view, "<u>", "</u>"));
+        underlineItem.setOnAction(e -> FormatMenuHelper.selectText(view, "<u>", "</u>", underlineItem));
         menus.add(underlineItem);
 
         menus.add(new SeparatorMenuItem());
 
         MenuItem strikeItem = new MenuItem("Strike");
-        strikeItem.setOnAction(e -> FormatMenuHelper.selectText(view, "<s>", "</s>"));
+        strikeItem.setOnAction(e -> FormatMenuHelper.selectText(view, "<s>", "</s>", strikeItem));
         menus.add(strikeItem);
 
         MenuItem highlightItem = new MenuItem("Highlight");
-        highlightItem.setOnAction(e -> FormatMenuHelper.selectText(view, "<span style=\"background-color: #FFFF00\">", "</span>"));
+        highlightItem.setOnAction(e -> FormatMenuHelper.selectText(view, "<span style=\"background-color: #FFFF00\">", "</span>", highlightItem));
         menus.add(highlightItem);
 
         MenuItem superScriptItem = new MenuItem("SuperScript");
-        superScriptItem.setOnAction(e -> FormatMenuHelper.selectText(view, "<sup>", "</sup>"));
+        superScriptItem.setOnAction(e -> FormatMenuHelper.selectText(view, "<sup>", "</sup>", superScriptItem));
         menus.add(superScriptItem);
 
         menus.add(new SeparatorMenuItem());
 
         MenuItem alignLeftItem = new MenuItem("Align Left");
-        alignLeftItem.setOnAction(e -> FormatMenuHelper.selectText(view, "<p style=\"text-align: left;\">", "</p>"));
+        alignLeftItem.setOnAction(e -> FormatMenuHelper.selectText(view, "<p style=\"text-align: left;\">", "</p>", alignLeftItem));
         menus.add(alignLeftItem);
 
         MenuItem alignRightItem = new MenuItem("Align Right");
-        alignRightItem.setOnAction(e -> FormatMenuHelper.selectText(view, "<p style=\"text-align: right;\">", "</p>"));
+        alignRightItem.setOnAction(e -> FormatMenuHelper.selectText(view, "<p style=\"text-align: right;\">", "</p>", alignRightItem));
         menus.add(alignRightItem);
 
         MenuItem alignCenterItem = new MenuItem("Align Center");
-        alignCenterItem.setOnAction(e -> FormatMenuHelper.selectText(view, "<p style=\"text-align: center;\">", "</p>"));
+        alignCenterItem.setOnAction(e -> FormatMenuHelper.selectText(view, "<p style=\"text-align: center;\">", "</p>", alignCenterItem));
         menus.add(alignCenterItem);
 
         menus.add(new SeparatorMenuItem());
@@ -68,7 +70,7 @@ public class FormatMenu {
         menus.add(new SeparatorMenuItem());
 
         MenuItem clearItem = new MenuItem("Clear Formatting");
-        clearItem.setOnAction(e -> FormatMenuHelper.selectText(view, "", "", "clear"));
+        clearItem.setOnAction(e -> FormatMenuHelper.selectText(view, "", "", clearItem, "clear"));
         menus.add(clearItem);
 
         return menus;

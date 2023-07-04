@@ -53,10 +53,12 @@ public class MainViewHelper {
                 try {
                     Files.writeString(view.getSaveLocation().toPath(), markdown);
 
+                    view.setTitle(view.getSaveLocation().getName());
+
                     view.getModified().set(false);
                     // If a Markdown file was loaded and saved, update the markdownFileLoaded flag
                     if (view.getMarkdownFileLoaded().get()) {
-//                        view.setTitle(view.getSaveLocation().getName());
+                        view.setTitle(view.getSaveLocation().getName());
                         view.getMarkdownFileLoaded().set(true);
                     }
                     // If a PowerPoint file was loaded and the markdown was saved, update the pptxFileLoaded flag

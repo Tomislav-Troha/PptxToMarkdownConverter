@@ -23,11 +23,16 @@ public class ParagraphMenu {
             int finalI = i;
             menuItem.setOnAction(event -> {
                 String selectedText = view.getMarkdownOutput().getSelectedText().replaceAll("#+", "").trim();
+
+                if (selectedText.isEmpty()) return;
+
                 int selectionStart = view.getMarkdownOutput().getSelection().getStart();
                 int selectionEnd = view.getMarkdownOutput().getSelection().getEnd();
 
-                // Replace the selected text with a markdown heading of the corresponding level
                 String heading = String.join("", Collections.nCopies(finalI, "#"));
+
+                if (selectedText.startsWith(heading)) return;
+
                 String formattedText = String.join(" ", heading, selectedText);
 
                 // Replace the selected text with the formatted text
@@ -45,6 +50,7 @@ public class ParagraphMenu {
 
         return menuItems;
     }
+
 
     private static MenuItem createMathBlockMenuItem(PptxToMarkDownView view) {
         MenuItem menuItem = new MenuItem("Math Block");
